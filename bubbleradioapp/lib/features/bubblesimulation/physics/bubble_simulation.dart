@@ -18,6 +18,8 @@ class BubbleSimulation {
 
   final _random = Random();
   Size _size = Size.zero;
+  Vector2 _gravity = Vector2.zero();
+  Vector2 _initialBubbleVelocity = Vector2.zero();
   bool _initialized = false;
   bool _running = false;
   int? _frameCallbackId;
@@ -32,15 +34,18 @@ class BubbleSimulation {
 
   BubbleSimulation() {
     // forge2d settings
-    velocityIterations = 5;
-    positionIterations = 5;
+    // velocityIterations = 5;
+    // positionIterations = 5;
   }
 
   void initialize(Size size, Vector2 gravity) {
     assert(!_initialized);
     _initialized = true;
     _size = size;
+    _gravity = gravity;
+    _initialBubbleVelocity = _gravity;
     _createWalls();
+    //_calculateGravity();
     world.setGravity(gravity / ppm);
     _running = true;
     _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_frameCallback);
@@ -69,7 +74,7 @@ class BubbleSimulation {
     }
 
     // Spawn in the desired bubbles with a brief delay per bubble
-    dart_async.Timer.periodic(const Duration(milliseconds: 70), (timer) {
+    dart_async.Timer.periodic(const Duration(milliseconds: 150), (timer) {
       // double spawnX = _random.nextDouble() * _origin.x + _origin.x;
       // _spawnBubble(Vector2(0, 0), _random.nextDouble() * 32 + 32);
       // cancel the timer when we have spawned all of our bubbles
@@ -117,17 +122,21 @@ class BubbleSimulation {
     final shape = CircleShape()..radius = radius / ppm;
 
     final fixture = FixtureDef(shape)
-      ..density = 4
-      ..friction = 0
-      ..restitution = .2;
+      ..density = 1
+      ..friction = 0.3
+      ..restitution = 0.5;
 
-    final bodyDef = BodyDef();
-    bodyDef.position = position / ppm;
-    bodyDef.type = BodyType.dynamic;
-    bodyDef.bullet = true;
-    bodyDef.userData = bubble;
-    Body body = world.createBody(bodyDef);
-    body.createFixture(fixture);
+    final bodyDef = BodyDef()
+      ..position = position / ppm
+      ..type = BodyType.dynamic
+      ..bullet = false
+      ..userData = bubble
+      ..gravityScale = Vector2(1, 1) * (_random.nextDouble() * 0.5 + 0.5);
+    bubble.body = world.createBody(bodyDef)
+      ..createFixture(fixture)
+      ..linearVelocity = _initialBubbleVelocity
+      ..linearDamping = 0.05
+      ..angularDamping = 0.05;
 
     bubbles.add(bubble);
   }

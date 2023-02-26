@@ -7,12 +7,12 @@ import '../physics/bubble_simulation.dart';
 import '../physics/physics_renderer.dart';
 
 class BubbleSimulationPainterWidget extends LeafRenderObjectWidget {
-  final BubbleSimulation bubbleSimulation = BubbleSimulation();
+  final BubbleSimulation bubbleSimulation;
 
-  BubbleSimulationPainterWidget({super.key}) {
+  BubbleSimulationPainterWidget({super.key, required this.bubbleSimulation}) {
     final Size simSize = window.physicalSize / window.devicePixelRatio;
-    bubbleSimulation.initialize(simSize, Vector2(0, -0.02));
-    bubbleSimulation.spawnBubbles(25);
+    bubbleSimulation.initialize(simSize, Vector2(0, -0.2));
+    bubbleSimulation.spawnBubbles(18);
   }
 
   @override
