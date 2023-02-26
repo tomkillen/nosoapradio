@@ -62,6 +62,28 @@ class _RadioPlayerState extends State<RadioPlayer> {
                       DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
                 ),
                 child: Stack(children: [
+                  SafeArea(
+                      child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Align(
+                              alignment: Alignment.topRight,
+                              child: Column(children: [
+                                // Radio Name
+                                Text(widget.station.name,
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontFamily: 'ClimateCrisis',
+                                        fontSize: 24,
+                                        color: Color.fromARGB(255, 113, 191, 69))),
+
+                                // Radio tags
+                                Text(widget.station.tags,
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontFamily: 'ClimateCrisis',
+                                        fontSize: 18,
+                                        color: Color.fromARGB(255, 63, 200, 244))),
+                              ])))),
                   PulsingWidget(
                     // Ideally we could beat detect the music to drive the duration of the pulse
                     // Use a fourier transform for this
