@@ -1,10 +1,11 @@
-import 'package:bubbleradioapp/models/radio_station.dart';
-import 'package:bubbleradioapp/services/radio_stations_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'models/radio_station.dart';
 import 'screens/bubble_radio.dart';
 import 'screens/radio_station_player.dart';
+import 'screens/welcome.dart';
+import 'services/radio_stations_bloc.dart';
 import 'services/service_locator.dart';
 
 void main() {
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
+          // initialRoute: '/welcome',
           home: BubbleRadio(),
           routes: {
+            '/welcome': (context) => WelcomeScreen(),
             '/radio': (context) => RadioPlayer(station: ModalRoute.of(context)!.settings.arguments as RadioStation),
           }),
     );
