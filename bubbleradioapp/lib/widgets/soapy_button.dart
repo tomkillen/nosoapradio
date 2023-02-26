@@ -44,16 +44,5 @@ class SoapyButton extends StatelessWidget {
             ),
           ],
         ));
-    // return Stack(
-    //   children: [
-    //     Center(child: Image.asset('assets/images/soap.png')),
-    //     Center(
-    //         child: Icon(
-    //       isPlaying ? Icons.stop : Icons.play_arrow,
-    //       size: 72,
-    //       color: const Color.fromARGB(255, 188, 106, 138),
-    //     ))
-    //   ],
-    // );
   }
 }

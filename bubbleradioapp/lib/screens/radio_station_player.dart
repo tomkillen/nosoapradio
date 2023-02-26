@@ -64,16 +64,16 @@ class _RadioPlayerState extends State<RadioPlayer> {
                       isPlaying: _player.playing,
                       isLoading: _stage == _RadioPlayerStage.loading,
                       onPressed: () {
-                        // if (_player.playing) {
-                        //   setState(() {
-                        //     _stage = _RadioPlayerStage.stopped;
-                        //   });
-                        //   _player.stop();
-                        //   Navigator.pop(context);
-                        // } else {
-                        //   _player.play();
-                        //   setState(() {});
-                        // }
+                        if (_player.playing) {
+                          setState(() {
+                            _stage = _RadioPlayerStage.stopped;
+                          });
+                          _player.stop();
+                          Navigator.pop(context);
+                        } else {
+                          _player.play();
+                          setState(() {});
+                        }
                       })),
             )));
   }
