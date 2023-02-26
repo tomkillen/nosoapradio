@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'widgets/radio_station_list.dart';
-import 'widgets/radio_station_player.dart';
+import 'screens/radio_station_player.dart';
 
 void main() {
   runApp(const MyApp());
