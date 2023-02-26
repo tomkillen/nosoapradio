@@ -10,7 +10,7 @@ typedef NeedsRepaintCallback = Function();
 
 class BubbleSimulation {
   // pixels per meter / pixels per unit of the sim
-  static const double ppm = 1;
+  static const double ppm = 100;
 
   final List<Bubble> bubbles = [];
   final World world = World();
@@ -41,7 +41,7 @@ class BubbleSimulation {
     _initialized = true;
     _size = size;
     _createWalls();
-    world.setGravity(gravity);
+    world.setGravity(gravity / ppm);
     _running = true;
     _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_frameCallback);
   }
@@ -73,7 +73,13 @@ class BubbleSimulation {
       // double spawnX = _random.nextDouble() * _origin.x + _origin.x;
       // _spawnBubble(Vector2(0, 0), _random.nextDouble() * 32 + 32);
       // cancel the timer when we have spawned all of our bubbles
-      _spawnBubble(Vector2(_size.width / 2, _size.height / 2), 32);
+
+      double radius = _random.nextDouble() * 32 + 32;
+      double x = _random.nextDouble() * (_size.width - radius * 2.0);
+      double y = _random.nextDouble() * 100.0 + _size.height - 200.0;
+
+      _spawnBubble(Vector2(x, y), radius);
+
       numBubblesToSpawn -= 1;
       if (numBubblesToSpawn <= 0) {
         timer.cancel();
@@ -112,7 +118,7 @@ class BubbleSimulation {
 
     final fixture = FixtureDef(shape)
       ..density = 4
-      ..friction = 1
+      ..friction = 0
       ..restitution = .2;
 
     final bodyDef = BodyDef();
@@ -127,18 +133,18 @@ class BubbleSimulation {
   }
 
   void _createWalls() {
-    const wallThickness = 10.0;
+    const wallThickness = 10.0 / ppm;
     // Left wall
-    _createWall(Vector2(0, _size.height / 2), Size(wallThickness, _size.height), Colors.red);
+    _createWall(Vector2(0, _size.height / 2) / ppm, Size(wallThickness, _size.height) / ppm, Colors.red);
 
     // Right wall
-    _createWall(Vector2(_size.width, _size.height / 2), Size(wallThickness, _size.height), Colors.cyan);
+    _createWall(Vector2(_size.width, _size.height / 2) / ppm, Size(wallThickness, _size.height) / ppm, Colors.cyan);
 
     // Top wall
-    _createWall(Vector2(_size.width / 2, 0), Size(_size.width, wallThickness), Colors.blue);
+    _createWall(Vector2(_size.width / 2, 0) / ppm, Size(_size.width, wallThickness) / ppm, Colors.blue);
 
     // Bottom wall
-    _createWall(Vector2(_size.width / 2, _size.height), Size(_size.width, wallThickness), Colors.green);
+    _createWall(Vector2(_size.width / 2, _size.height) / ppm, Size(_size.width, wallThickness) / ppm, Colors.green);
   }
 
   Body _createWall(Vector2 position, Size size, Color color) {
