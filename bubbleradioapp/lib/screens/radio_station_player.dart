@@ -1,3 +1,4 @@
+import 'package:bubbleradioapp/widgets/soapy_button.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -59,25 +60,21 @@ class _RadioPlayerState extends State<RadioPlayer> {
                 image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
               ),
               child: Center(
-                child: _player.playing
-                    ? IconButton(
-                        onPressed: () {
-                          if (_player.playing) {
-                            setState(() {
-                              _stage = _RadioPlayerStage.stopped;
-                            });
-                            _player.stop();
-                            Navigator.pop(context);
-                          } else {
-                            _player.play();
-                            setState(() {});
-                          }
-                        },
-                        icon: Icon(_player.playing ? Icons.stop : Icons.play_arrow),
-                        iconSize: 64.0,
-                      )
-                    : const CircularProgressIndicator(),
-              ),
+                  child: SoapyButton(
+                      isPlaying: _player.playing,
+                      isLoading: _stage == _RadioPlayerStage.loading,
+                      onPressed: () {
+                        // if (_player.playing) {
+                        //   setState(() {
+                        //     _stage = _RadioPlayerStage.stopped;
+                        //   });
+                        //   _player.stop();
+                        //   Navigator.pop(context);
+                        // } else {
+                        //   _player.play();
+                        //   setState(() {});
+                        // }
+                      })),
             )));
   }
 
