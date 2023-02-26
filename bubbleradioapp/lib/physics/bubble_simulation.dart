@@ -149,6 +149,11 @@ class BubbleSimulation {
     return bubble;
   }
 
+  /// Helper method that will spawn a bubble of a random size
+  Bubble? spawnRandomBubble(double minSize, double maxSize) {
+    return spawnBubbleWithRadius(_random.nextDouble() * (maxSize - minSize) + minSize);
+  }
+
   /// Helper method for spawning bubbles without needing to be aware of the
   /// configuration of the simulation
   Bubble? spawnBubbleWithRadius(double radius) {

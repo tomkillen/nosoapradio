@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../models/bubble.dart';
 import '../physics/bubble_simulation.dart';
 import '../services/radio_stations_api.dart';
 import '../services/service_locator.dart';
@@ -27,7 +25,6 @@ class BubbleRadio extends StatefulWidget {
 
 class _BubbleRadioState extends State<BubbleRadio> {
   final _backgroundAudio = AudioPlayer();
-  final List<Bubble> _bubbles = [];
 
   @override
   void initState() {
@@ -47,12 +44,13 @@ class _BubbleRadioState extends State<BubbleRadio> {
 
   @override
   Widget build(BuildContext context) {
+    final bubbles = ServiceLocator.get<BubbleSimulation>().bubbles;
     return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
         ),
         child: Stack(
-            children: List<Widget>.generate(_bubbles.length, (index) => RadioBubble(bubble: _bubbles[index]),
+            children: List<Widget>.generate(bubbles.length, (index) => RadioBubble(bubble: bubbles[index]),
                 growable: false)));
 
     // === BubbleSimulationPainterWidget is a debug renderer view of the bubbles
@@ -76,23 +74,21 @@ class _BubbleRadioState extends State<BubbleRadio> {
       // no stations loaded
       return;
     }
-    int minVotes = stations[0].votes;
-    int maxVotes = stations[0].votes;
 
-    for (var station in stations) {
-      minVotes = min(minVotes, station.votes);
-      maxVotes = max(maxVotes, station.votes);
-    }
-    double voteVariance = (maxVotes - minVotes).toDouble();
+    // int minVotes = stations[0].votes;
+    // int maxVotes = stations[0].votes;
+    // for (var station in stations) {
+    //   minVotes = min(minVotes, station.votes);
+    //   maxVotes = max(maxVotes, station.votes);
+    // }
+    //double voteVariance = (maxVotes - minVotes).toDouble();
 
     setState(() {
-      _bubbles.clear();
       for (var station in stations) {
-        final votePower = (station.votes - minVotes) / voteVariance;
-        final bubble = ServiceLocator.get<BubbleSimulation>().spawnBubbleWithRadius(32.0 + 32.0 * votePower);
+        // final votePower = (station.votes - minVotes) / voteVariance;
+        final bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(32, 64);
         if (bubble != null) {
           bubble.station = station;
-          _bubbles.add(bubble);
         }
       }
     });
