@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:bubbleradioapp/features/bubblesimulation/physics/bubble_simulation.dart';
@@ -10,6 +11,8 @@ class Bubble {
   Body? body;
   RadioStation? station;
 
+  StreamController<Vector2> positionStream = StreamController();
+
   Vector2 get position {
     if (body != null) {
       return Vector2(body!.position.x * BubbleSimulation.ppm, body!.position.y * BubbleSimulation.ppm);
@@ -19,4 +22,12 @@ class Bubble {
   }
 
   Bubble({required this.color, required this.radius});
+
+  void updateStreams() {
+    positionStream.add(position);
+  }
+
+  void dispose() {
+    positionStream.close();
+  }
 }

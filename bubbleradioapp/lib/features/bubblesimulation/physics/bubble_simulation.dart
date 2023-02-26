@@ -174,6 +174,9 @@ class BubbleSimulation {
     // Tick the simulation
     _step(deltaTimeSeconds);
 
+    // Publish positions
+    _publishStreams();
+
     // Mark we need a repaint
     onNeedPaint?.call();
 
@@ -186,6 +189,13 @@ class BubbleSimulation {
   void _step(double stepDeltaSeconds) {
     assert(_initialized);
     world.stepDt(stepDeltaSeconds);
+  }
+
+  void _publishStreams() {
+    assert(_initialized);
+    for (var bubble in bubbles) {
+      bubble.updateStreams();
+    }
   }
 
   void _createWalls() {
