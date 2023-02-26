@@ -2,7 +2,7 @@ import 'package:bubbleradioapp/services/radio_stations_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'screens/boring_radio_station_directory.dart';
+import 'widgets/radio_station_list.dart';
 
 void main() {
   runApp(const MyApp());
