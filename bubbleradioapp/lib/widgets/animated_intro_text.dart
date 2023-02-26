@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
 
-class AnimatedTextAndImage extends StatefulWidget {
+class AnimatedTextLines extends StatefulWidget {
   final String topText;
   final String leftText;
-  final String bottomText;
-  final Image image;
 
-  const AnimatedTextAndImage({
+  const AnimatedTextLines({
     Key? key,
     required this.topText,
     required this.leftText,
-    required this.bottomText,
-    required this.image,
   }) : super(key: key);
 
   @override
-  State<AnimatedTextAndImage> createState() => _AnimatedTextAndImageState();
+  State<AnimatedTextLines> createState() => _AnimatedTextLinesState();
 }
 
-class _AnimatedTextAndImageState extends State<AnimatedTextAndImage> with SingleTickerProviderStateMixin {
+class _AnimatedTextLinesState extends State<AnimatedTextLines> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _topAnimation;
   late Animation<double> _leftAnimation;
-  late Animation<double> _bottomAnimation;
-  late Animation<double> _imageAnimation;
 
   @override
   void initState() {
@@ -45,18 +39,6 @@ class _AnimatedTextAndImageState extends State<AnimatedTextAndImage> with Single
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.25, 0.5),
-      ),
-    );
-    _bottomAnimation = Tween<double>(begin: -500, end: 0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.5, 0.75),
-      ),
-    );
-    _imageAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.75, 1),
       ),
     );
 
@@ -94,24 +76,7 @@ class _AnimatedTextAndImageState extends State<AnimatedTextAndImage> with Single
           widget.leftText,
           style: const TextStyle(fontFamily: 'ClimateCrisis', color: Color.fromARGB(255, 113, 191, 69)),
         ),
-      ),
-      const SizedBox(height: 32),
-      AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) => Transform.translate(
-          offset: Offset(0, _bottomAnimation.value),
-          child: child,
-        ),
-        child: Text(
-          widget.bottomText,
-          style: const TextStyle(fontFamily: 'ClimateCrisis', fontSize: 48, color: Color.fromARGB(255, 63, 200, 244)),
-        ),
-      ),
-      const SizedBox(height: 32),
-      Opacity(
-        opacity: _imageAnimation.value,
-        child: widget.image,
-      ),
+      )
     ]);
   }
 }

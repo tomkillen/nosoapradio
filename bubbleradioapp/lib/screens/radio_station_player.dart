@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../models/radio_station.dart';
+import '../widgets/header_text.dart';
 import '../widgets/pulsing_widget.dart';
 
 class RadioPlayer extends StatefulWidget {
@@ -69,7 +70,9 @@ class _RadioPlayerState extends State<RadioPlayer> {
                               alignment: Alignment.topRight,
                               child: Column(children: [
                                 // Radio Name
-                                Text(widget.station.name,
+                                HeaderText(widget.station.name,
+                                    delay: const Duration(milliseconds: 1200),
+                                    duration: const Duration(milliseconds: 180),
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontFamily: 'ClimateCrisis',
@@ -77,7 +80,9 @@ class _RadioPlayerState extends State<RadioPlayer> {
                                         color: Color.fromARGB(255, 113, 191, 69))),
 
                                 // Radio tags
-                                Text(widget.station.tags,
+                                HeaderText(widget.station.tags,
+                                    delay: const Duration(milliseconds: 1500),
+                                    duration: const Duration(milliseconds: 300),
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontFamily: 'ClimateCrisis',
