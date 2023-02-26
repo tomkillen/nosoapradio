@@ -12,8 +12,16 @@ class RadioPlayer extends StatefulWidget {
   State<RadioPlayer> createState() => _RadioPlayerState();
 }
 
+enum _RadioPlayerStage {
+  loading,
+  playing,
+  stopped,
+  failed,
+}
+
 class _RadioPlayerState extends State<RadioPlayer> {
   final _player = AudioPlayer();
+  _RadioPlayerStage _stage = _RadioPlayerStage.loading;
 
   @override
   void initState() {
@@ -30,55 +38,62 @@ class _RadioPlayerState extends State<RadioPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    if (_stage == _RadioPlayerStage.failed) {
+      Navigator.pop(context);
+    }
+
     return Scaffold(
-        body: Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
-      ),
-      child: Center(
-        child: StreamBuilder<Duration?>(
-          stream: _player.durationStream,
-          builder: (context, snapshot) {
-            final duration = snapshot.data ?? Duration.zero;
-            return StreamBuilder<Duration?>(
-              stream: _player.positionStream,
-              builder: (context, snapshot) {
-                var position = snapshot.data ?? Duration.zero;
-                if (position > duration) {
-                  position = duration;
-                }
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        if (_player.playing) {
-                          _player.stop();
-                        } else {
-                          _player.play();
-                        }
-                        setState(() {});
-                      },
-                      icon: Icon(_player.playing ? Icons.stop : Icons.play_arrow),
-                      iconSize: 64.0,
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text('${position.inSeconds}/${duration.inSeconds} seconds'),
-                  ],
-                );
-              },
-            );
-          },
-        ),
-      ),
-    ));
+        body: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              // Swipe back to the previous page
+              if (details.primaryVelocity! > 0) {
+                setState(() {
+                  _stage = _RadioPlayerStage.stopped;
+                  _player.stop();
+                });
+                Navigator.of(context).pop();
+              }
+            },
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
+              ),
+              child: Center(
+                child: _player.playing
+                    ? IconButton(
+                        onPressed: () {
+                          if (_player.playing) {
+                            setState(() {
+                              _stage = _RadioPlayerStage.stopped;
+                            });
+                            _player.stop();
+                            Navigator.pop(context);
+                          } else {
+                            _player.play();
+                            setState(() {});
+                          }
+                        },
+                        icon: Icon(_player.playing ? Icons.stop : Icons.play_arrow),
+                        iconSize: 64.0,
+                      )
+                    : const CircularProgressIndicator(),
+              ),
+            )));
   }
 
   Future<void> _play() async {
     await _player.setUrl(widget.station.url).catchError((error) {
-      print('Failed to load audio: $error');
+      setState(() {
+        _stage = _RadioPlayerStage.failed;
+      });
       return null;
     });
-    await _player.play();
+
+    if (_stage == _RadioPlayerStage.loading) {
+      setState(() {
+        _stage = _RadioPlayerStage.playing;
+      });
+      await _player.play();
+    }
   }
 }
