@@ -18,10 +18,7 @@ class _RadioPlayerState extends State<RadioPlayer> {
   @override
   void initState() {
     super.initState();
-    _player.setUrl(widget.station.url).catchError((error) {
-      print('Failed to load audio: $error');
-      return null;
-    });
+    _play();
   }
 
   @override
@@ -34,10 +31,11 @@ class _RadioPlayerState extends State<RadioPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.station.name),
+        body: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
       ),
-      body: Center(
+      child: Center(
         child: StreamBuilder<Duration?>(
           stream: _player.durationStream,
           builder: (context, snapshot) {
@@ -73,6 +71,14 @@ class _RadioPlayerState extends State<RadioPlayer> {
           },
         ),
       ),
-    );
+    ));
+  }
+
+  Future<void> _play() async {
+    await _player.setUrl(widget.station.url).catchError((error) {
+      print('Failed to load audio: $error');
+      return null;
+    });
+    await _player.play();
   }
 }

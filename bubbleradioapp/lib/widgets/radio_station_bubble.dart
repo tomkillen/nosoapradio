@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:forge2d/forge2d.dart' as forge2d;
 import '../../../models/bubble.dart';
 
-typedef OnBubbleSelected = Function(Bubble bubble);
+typedef OnBubbleSelected = Function(BuildContext context, Bubble bubble);
 typedef OnBubblePopped = Function(Bubble bubble);
 
 class RadioStationBubble extends StatefulWidget {
@@ -70,22 +71,18 @@ class _RadioStationBubbleState extends State<RadioStationBubble> {
                     child: ClipOval(
                         child: Transform.rotate(
                             angle: _angle,
-                            child: Image(image: NetworkImage(widget.bubble.station!.favicon), fit: BoxFit.cover))),
+                            child: CachedNetworkImage(
+                                fit: BoxFit.cover,
+                                imageUrl: widget.bubble.station!.favicon,
+                                placeholder: (context, url) => const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => const Icon(Icons.error)))),
                   )),
               GestureDetector(
-                  onDoubleTap: _onSelected,
-                  onTap: _onPopped,
+                  onDoubleTap: () => widget.onBubbleSelected(context, widget.bubble),
+                  onTap: () => widget.onBubblePopped(widget.bubble),
                   child: const Image(image: AssetImage('assets/images/oily_bubble.png')))
             ],
           ),
         ));
-  }
-
-  void _onSelected() {
-    widget.onBubbleSelected(widget.bubble);
-  }
-
-  void _onPopped() {
-    widget.onBubblePopped(widget.bubble);
   }
 }

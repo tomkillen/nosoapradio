@@ -64,7 +64,9 @@ class _BubbleRadioState extends State<BubbleRadio> {
     return RadioStationBubble(bubble: bubble, onBubbleSelected: _onBubbleSelected, onBubblePopped: _onBubblePopped);
   }
 
-  void _onBubbleSelected(Bubble bubble) {}
+  void _onBubbleSelected(BuildContext context, Bubble bubble) {
+    Navigator.pushNamed(context, '/radio', arguments: bubble.station!);
+  }
 
   void _onBubblePopped(Bubble bubble) {
     // Despawn the bubble or reuse it as another radio station

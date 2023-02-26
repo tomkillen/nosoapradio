@@ -41,6 +41,7 @@ dependencies:
   forge2d: ^0.11.0
   sensors: ^2.0.3
   get_it: ^7.2.0
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
