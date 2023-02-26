@@ -1,16 +1,13 @@
 # bubbleradioapp
 
-A new Flutter project.
+An experimental soapy UI.
 
-## Getting Started
+## How to use
 
-This project is a starting point for a Flutter application.
+You will be presented with a wave of bubbles.
 
-A few resources to get you started if this is your first Flutter project:
+Each bubble represents a Radio Station.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Tap a bubble to pop it and get a new radio station to choose.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Double tap a bubble to play that radio station.
