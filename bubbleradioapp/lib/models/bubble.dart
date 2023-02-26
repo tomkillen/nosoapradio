@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:bubbleradioapp/features/bubblesimulation/physics/bubble_simulation.dart';
-import 'package:bubbleradioapp/models/radio_station.dart';
 import 'package:forge2d/forge2d.dart';
+
+import '../physics/bubble_simulation.dart';
+import 'radio_station.dart';
 
 class Bubble {
   final Color color;

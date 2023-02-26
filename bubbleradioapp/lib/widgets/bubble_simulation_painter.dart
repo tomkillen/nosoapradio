@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/bubble.dart';
-import '../physics/bubble_simulation.dart';
-import '../physics/physics_renderer.dart';
+import '../../../models/bubble.dart';
+import '../../../physics/bubble_simulation.dart';
+import '../../../physics/physics_renderer.dart';
 
 class BubbleSimulationPainterWidget extends LeafRenderObjectWidget {
   final BubbleSimulation bubbleSimulation;

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bubbleradioapp/features/bubblesimulation/physics/bubble_simulation.dart';
+import 'package:bubbleradioapp/physics/bubble_simulation.dart';
 import 'package:flutter/material.dart';
 import 'package:forge2d/forge2d.dart';
 

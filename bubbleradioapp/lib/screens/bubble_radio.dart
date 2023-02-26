@@ -1,15 +1,14 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:bubbleradioapp/features/bubblesimulation/physics/bubble_simulation.dart';
-import 'package:bubbleradioapp/features/bubblesimulation/widgets/radio_bubble.dart';
-import 'package:bubbleradioapp/services/radio_stations_api.dart';
-import 'package:bubbleradioapp/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-import '../features/bubblesimulation/models/bubble.dart';
-import '../features/bubblesimulation/widgets/bubble_simulation_painter.dart';
+import '../models/bubble.dart';
+import '../physics/bubble_simulation.dart';
+import '../services/radio_stations_api.dart';
+import '../services/service_locator.dart';
+import '../widgets/radio_bubble.dart';
 
 class BubbleRadio extends StatefulWidget {
   BubbleRadio({super.key}) {
@@ -90,7 +89,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
       _bubbles.clear();
       for (var station in stations) {
         final votePower = (station.votes - minVotes) / voteVariance;
-        final bubble = ServiceLocator.get<BubbleSimulation>().spawnBubbleWithRadius(32 + 32 * votePower);
+        final bubble = ServiceLocator.get<BubbleSimulation>().spawnBubbleWithRadius(32.0 + 32.0 * votePower);
         if (bubble != null) {
           bubble.station = station;
           _bubbles.add(bubble);

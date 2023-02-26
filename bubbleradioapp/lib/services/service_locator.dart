@@ -1,4 +1,4 @@
-import 'package:bubbleradioapp/features/bubblesimulation/physics/bubble_simulation.dart';
+import 'package:bubbleradioapp/physics/bubble_simulation.dart';
 import 'package:bubbleradioapp/services/radio_stations_api.dart';
 import 'package:get_it/get_it.dart';
 

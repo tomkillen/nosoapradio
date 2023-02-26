@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forge2d/forge2d.dart' as forge2d;
-import '../models/bubble.dart';
+import '../../../models/bubble.dart';
 
 class RadioBubble extends StatefulWidget {
   final Bubble bubble;
