@@ -18,6 +18,8 @@ class RadioStationList extends StatelessWidget {
             return ListTile(
               title: Text(station.name),
               subtitle: Text(station.url),
+              onTap: () =>
+                  {Navigator.pushNamed(context, '/radio', arguments: station)},
             );
           },
         );
