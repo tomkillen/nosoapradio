@@ -3,10 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../models/bubble.dart';
 import '../physics/bubble_simulation.dart';
 import '../services/radio_stations_api.dart';
 import '../services/service_locator.dart';
-import '../widgets/radio_bubble.dart';
+import '../widgets/radio_station_bubble.dart';
 
 class BubbleRadio extends StatefulWidget {
   BubbleRadio({super.key}) {
@@ -25,11 +26,14 @@ class BubbleRadio extends StatefulWidget {
 
 class _BubbleRadioState extends State<BubbleRadio> {
   final _backgroundAudio = AudioPlayer();
+  final _popBubbleAudio = AudioPlayer();
+  final List<RadioStationBubble> _radioBubbleWidgets = [];
 
   @override
   void initState() {
     super.initState();
     _loadStations();
+    _popBubbleAudio.setAsset('assets/sounds/big_pop.wav');
 
     // TODO renable audio before releasing this
     // _startAudio();
@@ -44,25 +48,43 @@ class _BubbleRadioState extends State<BubbleRadio> {
 
   @override
   Widget build(BuildContext context) {
-    final bubbles = ServiceLocator.get<BubbleSimulation>().bubbles;
     return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
         ),
-        child: Stack(
-            children: List<Widget>.generate(bubbles.length, (index) => RadioBubble(bubble: bubbles[index]),
-                growable: false)));
-
-    // === BubbleSimulationPainterWidget is a debug renderer view of the bubbles
-    // child: Stack(children: [
-    //   BubbleSimulationPainterWidget(bubbleSimulation: ServiceLocator.get<BubbleSimulation>()),
-    //   Stack(
-    //       children: List<Widget>.generate(_bubbles.length, (index) => RadioBubble(bubble: _bubbles[index]),
-    //           growable: false))
-    // ]));
+        child: Stack(children: _radioBubbleWidgets));
   }
 
-  Future<void> _startAudio() async {
+  RadioStationBubble _createRadioBubbleWidget(Bubble bubble) {
+    return RadioStationBubble(bubble: bubble, onBubbleSelected: _onBubbleSelected, onBubblePopped: _onBubblePopped);
+  }
+
+  void _onBubbleSelected(Bubble bubble) {}
+
+  void _onBubblePopped(Bubble bubble) {
+    print('Popping bubble ${bubble.station!.name}');
+    setState(() {
+      // Remove the widget associated with this bubble
+      for (int i = 0; i < _radioBubbleWidgets.length; ++i) {
+        if (_radioBubbleWidgets[i].bubble == bubble) {
+          _radioBubbleWidgets.removeAt(i);
+          break;
+        }
+      }
+      // Remove the bubble from the physics simulation
+      ServiceLocator.get<BubbleSimulation>().despawnBubble(bubble);
+    });
+    // Give some feedback
+    _playBubblePop();
+  }
+
+  Future<void> _playBubblePop() async {
+    await _popBubbleAudio.stop();
+    await _popBubbleAudio.seek(Duration.zero);
+    _popBubbleAudio.play();
+  }
+
+  Future<void> _startShowerAudio() async {
     await _backgroundAudio.setAsset('assets/sounds/showersinging.wav');
     _backgroundAudio.setLoopMode(LoopMode.one);
     _backgroundAudio.play();
@@ -89,6 +111,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
         final bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(32, 64);
         if (bubble != null) {
           bubble.station = station;
+          _radioBubbleWidgets.add(_createRadioBubbleWidget(bubble));
         }
       }
     });

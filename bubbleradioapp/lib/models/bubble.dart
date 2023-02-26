@@ -9,8 +9,8 @@ import 'radio_station.dart';
 class Bubble {
   final Color color;
   final double radius;
-  Body? body;
-  RadioStation? station;
+  Body? _body;
+  RadioStation? _station;
 
   StreamController<Vector2> positionStream = StreamController();
 
@@ -22,6 +22,22 @@ class Bubble {
 
   double get angle {
     return (body != null) ? body!.angle : 0;
+  }
+
+  RadioStation? get station => _station;
+  set station(RadioStation? value) {
+    if (_station != null) {
+      print('Overwriting station');
+    }
+    _station = value;
+  }
+
+  Body? get body => _body;
+  set body(Body? value) {
+    if (_body != null) {
+      print('Overwriting Body');
+    }
+    _body = value;
   }
 
   Bubble({required this.color, required this.radius});

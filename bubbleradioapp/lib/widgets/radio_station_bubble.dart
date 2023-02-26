@@ -1,17 +1,26 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forge2d/forge2d.dart' as forge2d;
 import '../../../models/bubble.dart';
 
-class RadioBubble extends StatefulWidget {
-  final Bubble bubble;
+typedef OnBubbleSelected = Function(Bubble bubble);
+typedef OnBubblePopped = Function(Bubble bubble);
 
-  const RadioBubble({super.key, required this.bubble});
+class RadioStationBubble extends StatefulWidget {
+  final Bubble bubble;
+  final OnBubbleSelected onBubbleSelected;
+  final OnBubblePopped onBubblePopped;
+
+  const RadioStationBubble(
+      {super.key, required this.bubble, required this.onBubbleSelected, required this.onBubblePopped});
 
   @override
-  State<RadioBubble> createState() => _RadioBubbleState();
+  State<RadioStationBubble> createState() => _RadioStationBubbleState();
 }
 
-class _RadioBubbleState extends State<RadioBubble> {
+class _RadioStationBubbleState extends State<RadioStationBubble> {
+  StreamSubscription<forge2d.Vector2>? _positionStreamSubscription;
   forge2d.Vector2 _position = forge2d.Vector2.zero();
   double _radius = 0;
   double _angle = 0;
@@ -21,7 +30,7 @@ class _RadioBubbleState extends State<RadioBubble> {
     super.initState();
     _position = widget.bubble.position;
     _radius = widget.bubble.radius;
-    widget.bubble.positionStream.stream.listen((position) {
+    _positionStreamSubscription = widget.bubble.positionStream.stream.listen((position) {
       setState(() {
         _position = position;
 
@@ -32,6 +41,13 @@ class _RadioBubbleState extends State<RadioBubble> {
         _angle = widget.bubble.angle;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _positionStreamSubscription?.cancel();
+    _positionStreamSubscription = null;
   }
 
   @override
@@ -56,7 +72,10 @@ class _RadioBubbleState extends State<RadioBubble> {
                             angle: _angle,
                             child: Image(image: NetworkImage(widget.bubble.station!.favicon), fit: BoxFit.cover))),
                   )),
-              const Image(image: AssetImage('assets/images/oily_bubble.png'))
+              GestureDetector(
+                  onDoubleTap: () => widget.onBubbleSelected(widget.bubble),
+                  onTap: () => widget.onBubblePopped(widget.bubble),
+                  child: const Image(image: AssetImage('assets/images/oily_bubble.png')))
             ],
           ),
         ));

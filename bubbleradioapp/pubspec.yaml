@@ -69,6 +69,7 @@ flutter:
     - assets/images/white_large.jpg
     - assets/images/oily_bubble.png
     - assets/sounds/showersinging.wav
+    - assets/sounds/big_pop.wav
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
