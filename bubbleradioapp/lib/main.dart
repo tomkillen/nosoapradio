@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RadioStationsService(),
+      create: (context) => RadioStationsBloc(),
       child: MaterialApp(
           title: 'Bubble Radio',
           theme: ThemeData(

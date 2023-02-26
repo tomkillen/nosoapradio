@@ -9,7 +9,7 @@ class RadioStationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RadioStationsService, List<RadioStation>>(
+    return BlocBuilder<RadioStationsBloc, List<RadioStation>>(
       builder: (context, stations) {
         return ListView.builder(
           itemCount: stations.length,
@@ -18,14 +18,13 @@ class RadioStationList extends StatelessWidget {
             return ListTile(
               title: Text(station.name),
               subtitle: Text(station.url),
-              onTap: () =>
-                  {Navigator.pushNamed(context, '/radio', arguments: station)},
+              onTap: () => {Navigator.pushNamed(context, '/radio', arguments: station)},
             );
           },
         );
       },
       buildWhen: (previous, current) => current.isNotEmpty,
-      bloc: BlocProvider.of<RadioStationsService>(context)..getRadioStations(),
+      bloc: BlocProvider.of<RadioStationsBloc>(context)..getRadioStations(),
     );
   }
 }

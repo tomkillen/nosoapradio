@@ -2,8 +2,10 @@ class RadioStation {
   final String name;
   final String url;
   final String favicon;
+  final String tags;
+  final int votes;
 
-  RadioStation({required this.name, required this.url, required this.favicon});
+  RadioStation({required this.name, required this.url, required this.favicon, required this.tags, required this.votes});
 
   factory RadioStation.fromJson(Map<String, dynamic> json) {
     // Example JSON object
@@ -45,9 +47,6 @@ class RadioStation {
     // "has_extended_info": true
 
     return RadioStation(
-      name: json['name'],
-      url: json['url'],
-      favicon: json['favicon'],
-    );
+        name: json['name'], url: json['url'], favicon: json['favicon'], tags: json['tags'], votes: json['votes']);
   }
 }
