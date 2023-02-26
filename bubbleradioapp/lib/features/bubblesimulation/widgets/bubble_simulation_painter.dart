@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'package:forge2d/forge2d.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bubble.dart';
@@ -9,11 +7,7 @@ import '../physics/physics_renderer.dart';
 class BubbleSimulationPainterWidget extends LeafRenderObjectWidget {
   final BubbleSimulation bubbleSimulation;
 
-  BubbleSimulationPainterWidget({super.key, required this.bubbleSimulation}) {
-    final Size simSize = window.physicalSize / window.devicePixelRatio;
-    bubbleSimulation.initialize(simSize);
-    bubbleSimulation.spawnBubbles(18);
-  }
+  const BubbleSimulationPainterWidget({super.key, required this.bubbleSimulation});
 
   @override
   RenderObject createRenderObject(BuildContext context) {
