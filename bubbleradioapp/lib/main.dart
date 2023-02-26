@@ -25,11 +25,9 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ),
           // home: const Scaffold(body: RadioStationList()),
-          home: const BubbleRadio(),
+          home: BubbleRadio(),
           routes: {
-            '/radio': (context) => RadioPlayer(
-                station:
-                    ModalRoute.of(context)!.settings.arguments as RadioStation),
+            '/radio': (context) => RadioPlayer(station: ModalRoute.of(context)!.settings.arguments as RadioStation),
           }),
     );
   }
