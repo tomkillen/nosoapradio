@@ -163,6 +163,19 @@ class BubbleSimulation {
     return spawnBubble(position, radius, _initialBubbleVelocity);
   }
 
+  void respawnBubble(Bubble bubble, double minSize, double maxSize) {
+    if (bubble.body == null) {
+      print('Bubble is not in the physics system');
+      return;
+    } else {
+      // final radius = _random.nextDouble() * (maxSize - minSize) + minSize;
+      double x = _random.nextDouble() * (_size.width / 2) + _size.width / 2;
+      double y = _random.nextDouble() * 50.0 + _size.height - 100.0;
+      Vector2 position = Vector2(x, y);
+      bubble.body!.setTransform(position, 0.0);
+    }
+  }
+
   void despawnBubble(Bubble bubble) {
     if (bubble.body != null) {
       world.destroyBody(bubble.body!);

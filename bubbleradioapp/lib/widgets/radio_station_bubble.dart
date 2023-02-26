@@ -73,11 +73,19 @@ class _RadioStationBubbleState extends State<RadioStationBubble> {
                             child: Image(image: NetworkImage(widget.bubble.station!.favicon), fit: BoxFit.cover))),
                   )),
               GestureDetector(
-                  onDoubleTap: () => widget.onBubbleSelected(widget.bubble),
-                  onTap: () => widget.onBubblePopped(widget.bubble),
+                  onDoubleTap: _onSelected,
+                  onTap: _onPopped,
                   child: const Image(image: AssetImage('assets/images/oily_bubble.png')))
             ],
           ),
         ));
+  }
+
+  void _onSelected() {
+    widget.onBubbleSelected(widget.bubble);
+  }
+
+  void _onPopped() {
+    widget.onBubblePopped(widget.bubble);
   }
 }

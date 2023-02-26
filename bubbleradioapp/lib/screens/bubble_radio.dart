@@ -25,15 +25,21 @@ class BubbleRadio extends StatefulWidget {
 }
 
 class _BubbleRadioState extends State<BubbleRadio> {
+  static const double minBubbleSize = 32;
+  static const double maxBubbleSize = 64;
   final _backgroundAudio = AudioPlayer();
-  final _popBubbleAudio = AudioPlayer();
+  final _sfxBigPop = AudioPlayer();
+  final _sfxMidPop = AudioPlayer();
+  final _sfxSmallPop = AudioPlayer();
   final List<RadioStationBubble> _radioBubbleWidgets = [];
 
   @override
   void initState() {
     super.initState();
     _loadStations();
-    _popBubbleAudio.setAsset('assets/sounds/big_pop.wav');
+    _sfxBigPop.setAsset('assets/sounds/big_pop.wav');
+    _sfxMidPop.setAsset('assets/sounds/middle_pop.wav');
+    _sfxSmallPop.setAsset('assets/sounds/small_pop.wav');
 
     // TODO renable audio before releasing this
     // _startAudio();
@@ -62,26 +68,36 @@ class _BubbleRadioState extends State<BubbleRadio> {
   void _onBubbleSelected(Bubble bubble) {}
 
   void _onBubblePopped(Bubble bubble) {
-    print('Popping bubble ${bubble.station!.name}');
-    setState(() {
-      // Remove the widget associated with this bubble
-      for (int i = 0; i < _radioBubbleWidgets.length; ++i) {
-        if (_radioBubbleWidgets[i].bubble == bubble) {
-          _radioBubbleWidgets.removeAt(i);
-          break;
-        }
-      }
-      // Remove the bubble from the physics simulation
-      ServiceLocator.get<BubbleSimulation>().despawnBubble(bubble);
-    });
-    // Give some feedback
-    _playBubblePop();
+    // Despawn the bubble or reuse it as another radio station
+    ServiceLocator.get<BubbleSimulation>().respawnBubble(bubble, minBubbleSize, maxBubbleSize);
+
+    // Give some feedback, with the strength of the pop audio sfx corresponding
+    // to the bubble size
+    if (bubble.radius < 42) {
+      _playSmallBubblePop();
+    } else if (bubble.radius < 52) {
+      _playMidBubblePop();
+    } else {
+      _playBigBubblePop();
+    }
   }
 
-  Future<void> _playBubblePop() async {
-    await _popBubbleAudio.stop();
-    await _popBubbleAudio.seek(Duration.zero);
-    _popBubbleAudio.play();
+  Future<void> _playSmallBubblePop() async {
+    await _sfxBigPop.stop();
+    await _sfxBigPop.seek(Duration.zero);
+    _sfxBigPop.play();
+  }
+
+  Future<void> _playMidBubblePop() async {
+    await _sfxBigPop.stop();
+    await _sfxBigPop.seek(Duration.zero);
+    _sfxBigPop.play();
+  }
+
+  Future<void> _playBigBubblePop() async {
+    await _sfxBigPop.stop();
+    await _sfxBigPop.seek(Duration.zero);
+    _sfxBigPop.play();
   }
 
   Future<void> _startShowerAudio() async {
@@ -108,7 +124,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
     setState(() {
       for (var station in stations) {
         // final votePower = (station.votes - minVotes) / voteVariance;
-        final bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(32, 64);
+        var bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(minBubbleSize, maxBubbleSize);
         if (bubble != null) {
           bubble.station = station;
           _radioBubbleWidgets.add(_createRadioBubbleWidget(bubble));
