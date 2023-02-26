@@ -11,7 +11,7 @@ class BubbleSimulationPainterWidget extends LeafRenderObjectWidget {
 
   BubbleSimulationPainterWidget({super.key, required this.bubbleSimulation}) {
     final Size simSize = window.physicalSize / window.devicePixelRatio;
-    bubbleSimulation.initialize(simSize, Vector2(0, -0.2));
+    bubbleSimulation.initialize(simSize);
     bubbleSimulation.spawnBubbles(18);
   }
 

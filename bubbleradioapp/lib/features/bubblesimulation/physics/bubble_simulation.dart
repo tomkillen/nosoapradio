@@ -1,8 +1,9 @@
-import 'dart:async' as dart_async;
+import 'dart:async' as async;
 import 'dart:math';
 import 'package:flutter/scheduler.dart';
 import 'package:forge2d/forge2d.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors/sensors.dart';
 
 import '../models/bubble.dart';
 
@@ -10,7 +11,19 @@ typedef NeedsRepaintCallback = Function();
 
 class BubbleSimulation {
   // pixels per meter / pixels per unit of the sim
+  // this scales the simulation down to a sane size since Box2D will suffer
+  // from floating-point inaccuracy issues when the size of the sim is larger
+  // than O(100).
+  // To really future proof this, we should calculate this scalar based on the
+  // screen size but I won't gold plate it now since most phones are O(1000)
+  // pixels and so diving by 100 brings us into the realm of nice values
   static const double ppm = 100;
+
+  // We prefer the integrity of the physics simulation even at the expense of
+  // skipped frames so limit the update tick to no more than 60 fps
+  static const double maxDeltaTimeSeconds = 1.0 / 30.0;
+
+  static const double defaultGravity = 9.8;
 
   final List<Bubble> bubbles = [];
   final World world = World();
@@ -18,13 +31,15 @@ class BubbleSimulation {
 
   final _random = Random();
   Size _size = Size.zero;
-  Vector2 _gravity = Vector2.zero();
-  Vector2 _initialBubbleVelocity = Vector2.zero();
+  Vector3 _realGravityNormalized = Vector3(0, 1, 0); // portrait-up
+  final double _gravityStrength = defaultGravity;
+  final Vector2 _initialBubbleVelocity = Vector2(0, -defaultGravity / ppm);
   bool _initialized = false;
   bool _running = false;
   int? _frameCallbackId;
+  async.StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
 
-  // Debug colors for rendering bubbles before I have album art loading
+  // Debug colors for rendering bubbles
   final List<Color> _colors = [
     const Color.fromARGB(255, 62, 36, 251),
     const Color.fromARGB(255, 39, 230, 227),
@@ -32,39 +47,47 @@ class BubbleSimulation {
     const Color.fromARGB(255, 253, 66, 193),
   ];
 
-  BubbleSimulation() {
-    // forge2d settings
-    // velocityIterations = 5;
-    // positionIterations = 5;
-  }
-
-  void initialize(Size size, Vector2 gravity) {
+  void initialize(Size size) {
     assert(!_initialized);
-    _initialized = true;
+
     _size = size;
-    _gravity = gravity;
-    _initialBubbleVelocity = _gravity;
+
+    // Setup world
+    world.setAllowSleep(false);
     _createWalls();
-    //_calculateGravity();
-    world.setGravity(gravity / ppm);
-    _running = true;
-    _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_frameCallback);
+    _caculateWorldGravity();
+
+    _initialized = true;
+
+    // Now that we are initialized, start running the sim
+    start();
   }
 
-  void pause() {
+  void start() {
+    if (_initialized && !_running) {
+      _running = true;
+
+      // Start accelerometer update
+      _accelerometerSubscription = accelerometerEvents.listen(_accelerometerEventHandler);
+
+      // Start frame ticker
+      _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_frameCallback);
+    }
+  }
+
+  void stop() {
     if (_running) {
+      // cancel frame ticker
       if (_frameCallbackId != null) {
         SchedulerBinding.instance.cancelFrameCallbackWithId(_frameCallbackId!);
         _frameCallbackId = null;
       }
-      _running = false;
-    }
-  }
 
-  void resume() {
-    if (_initialized && !_running) {
-      _running = true;
-      _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_frameCallback);
+      // cancel accelerometer updates
+      _accelerometerSubscription?.cancel();
+      _accelerometerSubscription = null;
+
+      _running = false;
     }
   }
 
@@ -74,11 +97,7 @@ class BubbleSimulation {
     }
 
     // Spawn in the desired bubbles with a brief delay per bubble
-    dart_async.Timer.periodic(const Duration(milliseconds: 150), (timer) {
-      // double spawnX = _random.nextDouble() * _origin.x + _origin.x;
-      // _spawnBubble(Vector2(0, 0), _random.nextDouble() * 32 + 32);
-      // cancel the timer when we have spawned all of our bubbles
-
+    async.Timer.periodic(const Duration(milliseconds: 150), (timer) {
       double radius = _random.nextDouble() * 32 + 32;
       double x = _random.nextDouble() * (_size.width - radius * 2.0);
       double y = _random.nextDouble() * 100.0 + _size.height - 200.0;
@@ -86,6 +105,8 @@ class BubbleSimulation {
       _spawnBubble(Vector2(x, y), radius);
 
       numBubblesToSpawn -= 1;
+
+      // cancel the timer when we have spawned all of our bubbles
       if (numBubblesToSpawn <= 0) {
         timer.cancel();
       }
@@ -95,7 +116,9 @@ class BubbleSimulation {
   void _frameCallback(Duration frameDelta) {
     // Calculate frame delta seconds based by converting the duration
     // milliseconds for highest available accuracy
-    final double deltaTimeSeconds = frameDelta.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
+    double deltaTimeSeconds = frameDelta.inMicroseconds / Duration.microsecondsPerMillisecond / 1000.0;
+
+    deltaTimeSeconds = min(deltaTimeSeconds, maxDeltaTimeSeconds);
 
     // Tick the simulation
     _step(deltaTimeSeconds);
@@ -131,12 +154,12 @@ class BubbleSimulation {
       ..type = BodyType.dynamic
       ..bullet = false
       ..userData = bubble
-      ..gravityScale = Vector2(1, 1) * (_random.nextDouble() * 0.5 + 0.5);
+      ..gravityScale = Vector2(-1, -1) * (_random.nextDouble() * 0.25 + 0.75);
     bubble.body = world.createBody(bodyDef)
       ..createFixture(fixture)
       ..linearVelocity = _initialBubbleVelocity
-      ..linearDamping = 0.05
-      ..angularDamping = 0.05;
+      ..linearDamping = 0.01
+      ..angularDamping = 0.01;
 
     bubbles.add(bubble);
   }
@@ -166,5 +189,21 @@ class BubbleSimulation {
     final fixture = FixtureDef(shape);
     body.createFixture(fixture);
     return body;
+  }
+
+  void _accelerometerEventHandler(AccelerometerEvent event) {
+    _realGravityNormalized = Vector3(-event.x, event.y, event.z).normalized();
+    _caculateWorldGravity();
+  }
+
+  /// Calculates the gravity for the world based on the gravity strength
+  /// and the scale of the physics simulation.
+  void _caculateWorldGravity() {
+    // just ignore the z component. If the phone is oriented screen-up then
+    // this will result in reduced world gravity which makes sense, they'll
+    // float up against the screen
+    Vector2 gravity = _realGravityNormalized.xy * (_gravityStrength / ppm);
+
+    world.setGravity(gravity);
   }
 }
