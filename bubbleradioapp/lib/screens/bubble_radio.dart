@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'bubble_radio_physics.dart';
+import '../features/bubblesimulation/widgets/bubble_simulation_painter.dart';
 
 class BubbleRadio extends StatefulWidget {
   const BubbleRadio({super.key});
@@ -19,11 +19,9 @@ class _BubbleRadioState extends State<BubbleRadio> {
   Widget build(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/images/white_large.jpg'),
-              repeat: ImageRepeat.repeat),
+          image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
         ),
-        child: BubbleSimulationWidget() // Your widget contents here
+        child: BubbleSimulationPainterWidget() // Your widget contents here
         );
   }
 }
