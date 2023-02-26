@@ -6,14 +6,10 @@ import 'package:bubbleradioapp/features/bubblesimulation/widgets/radio_bubble.da
 import 'package:bubbleradioapp/services/radio_stations_api.dart';
 import 'package:bubbleradioapp/services/service_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:forge2d/forge2d.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../features/bubblesimulation/models/bubble.dart';
 import '../features/bubblesimulation/widgets/bubble_simulation_painter.dart';
-import '../models/radio_station.dart';
-import '../services/radio_stations_bloc.dart';
 
 class BubbleRadio extends StatefulWidget {
   BubbleRadio({super.key}) {
@@ -56,12 +52,17 @@ class _BubbleRadioState extends State<BubbleRadio> {
         decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
         ),
-        child: Stack(children: [
-          BubbleSimulationPainterWidget(bubbleSimulation: ServiceLocator.get<BubbleSimulation>()),
-          Stack(
-              children: List<Widget>.generate(_bubbles.length, (index) => RadioBubble(bubble: _bubbles[index]),
-                  growable: false))
-        ]));
+        child: Stack(
+            children: List<Widget>.generate(_bubbles.length, (index) => RadioBubble(bubble: _bubbles[index]),
+                growable: false)));
+
+    // === BubbleSimulationPainterWidget is a debug renderer view of the bubbles
+    // child: Stack(children: [
+    //   BubbleSimulationPainterWidget(bubbleSimulation: ServiceLocator.get<BubbleSimulation>()),
+    //   Stack(
+    //       children: List<Widget>.generate(_bubbles.length, (index) => RadioBubble(bubble: _bubbles[index]),
+    //           growable: false))
+    // ]));
   }
 
   Future<void> _startAudio() async {
@@ -70,8 +71,6 @@ class _BubbleRadioState extends State<BubbleRadio> {
     _backgroundAudio.play();
   }
 
-  // TODO change to use flutter_bloc using RadioStationsBloc
-  // see ../services/radio_stations_bloc.dart
   Future<void> _loadStations() async {
     final stations = await ServiceLocator.get<RadioStationsApi>().getRadioStations(limit: 32);
     if (stations.isEmpty) {

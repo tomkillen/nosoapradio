@@ -9,22 +9,6 @@ class RadioBubble extends StatefulWidget {
 
   @override
   State<RadioBubble> createState() => _RadioBubbleState();
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Positioned(
-  //     top: bubble.position.y - bubble.radius,
-  //     left: bubble.position.x - bubble.radius,
-  //     child: Container(
-  //         width: bubble.radius,
-  //         height: bubble.radius,
-  //         decoration: BoxDecoration(
-  //           shape: BoxShape.circle,
-  //           image: DecorationImage(image: NetworkImage(bubble.station!.favicon), fit: BoxFit.cover),
-  //         ),
-  //         child: const Image(image: AssetImage('assets/images/oily_bubble.png'))),
-  //   );
-  // }
 }
 
 class _RadioBubbleState extends State<RadioBubble> {
@@ -55,15 +39,23 @@ class _RadioBubbleState extends State<RadioBubble> {
     return Positioned(
         top: _position.y - _radius,
         left: _position.x - _radius,
-        child: Container(
+        child: SizedBox(
           width: _radius * 2,
           height: _radius * 2,
           child: Stack(
             children: [
-              ClipOval(
-                  child: Transform.rotate(
-                      angle: _angle,
-                      child: Image(image: NetworkImage(widget.bubble.station!.favicon), fit: BoxFit.cover))),
+              // position inside the bubble texture
+              Positioned(
+                  top: 2,
+                  left: 2,
+                  child: SizedBox(
+                    width: _radius * 2 - 4,
+                    height: _radius * 2 - 4,
+                    child: ClipOval(
+                        child: Transform.rotate(
+                            angle: _angle,
+                            child: Image(image: NetworkImage(widget.bubble.station!.favicon), fit: BoxFit.cover))),
+                  )),
               const Image(image: AssetImage('assets/images/oily_bubble.png'))
             ],
           ),
