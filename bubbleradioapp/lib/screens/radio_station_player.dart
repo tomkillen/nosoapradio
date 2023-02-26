@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../models/radio_station.dart';
+import '../widgets/pulsing_widget.dart';
 
 class RadioPlayer extends StatefulWidget {
   final RadioStation station;
@@ -56,26 +57,34 @@ class _RadioPlayerState extends State<RadioPlayer> {
               }
             },
             child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
-              ),
-              child: Center(
-                  child: SoapyButton(
-                      isPlaying: _player.playing,
-                      isLoading: _stage == _RadioPlayerStage.loading,
-                      onPressed: () {
-                        if (_player.playing) {
-                          setState(() {
-                            _stage = _RadioPlayerStage.stopped;
-                          });
-                          _player.stop();
-                          Navigator.pop(context);
-                        } else {
-                          _player.play();
-                          setState(() {});
-                        }
-                      })),
-            )));
+                decoration: const BoxDecoration(
+                  image:
+                      DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
+                ),
+                child: Stack(children: [
+                  PulsingWidget(
+                    // Ideally we could beat detect the music to drive the duration of the pulse
+                    // Use a fourier transform for this
+                    pulseDuration: const Duration(milliseconds: 500),
+                    pulsing: _player.playing,
+                    child: Center(
+                        child: SoapyButton(
+                            isPlaying: _player.playing,
+                            isLoading: _stage == _RadioPlayerStage.loading,
+                            onPressed: () {
+                              if (_player.playing) {
+                                setState(() {
+                                  _stage = _RadioPlayerStage.stopped;
+                                });
+                                _player.stop();
+                                Navigator.pop(context);
+                              } else {
+                                _player.play();
+                                setState(() {});
+                              }
+                            })),
+                  )
+                ]))));
   }
 
   Future<void> _play() async {
