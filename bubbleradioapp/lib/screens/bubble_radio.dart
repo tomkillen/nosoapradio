@@ -15,7 +15,7 @@ import '../models/radio_station.dart';
 import '../services/radio_stations_service.dart';
 
 class BubbleRadio extends StatefulWidget {
-  final BubbleSimulation bubbleSimulation = BubbleSimulation(maxNumBubbles: 18);
+  final BubbleSimulation bubbleSimulation = BubbleSimulation(maxNumBubbles: 32);
 
   BubbleRadio({super.key}) {
     _initSimulation();
@@ -28,7 +28,7 @@ class BubbleRadio extends StatefulWidget {
     // Create a bubble simulation sized to fit the physical screen
     final Size simSize = window.physicalSize / window.devicePixelRatio;
     bubbleSimulation.initialize(simSize);
-    bubbleSimulation.spawnBubbles(18);
+    // bubbleSimulation.spawnBubbles(18);
   }
 }
 
@@ -73,7 +73,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
   }
 
   Future<void> _loadStations() async {
-    final stations = await _api.getRadioStations(limit: 20);
+    final stations = await _api.getRadioStations(limit: 32);
     if (stations.isEmpty) {
       // no stations loaded
       return;
