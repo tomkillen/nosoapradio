@@ -151,7 +151,7 @@ class BubbleSimulation {
   /// Helper method for spawning bubbles without needing to be aware of the
   /// configuration of the simulation
   Bubble spawnBubbleWithRadius(double radius) {
-    double x = _random.nextDouble() * (_size.width / 2) + _size.width / 2;
+    double x = _random.nextDouble() * (_size.width / 2) + _size.width * 0.25;
     double y = _random.nextDouble() * 50.0 + _size.height - 100.0;
     Vector2 position = Vector2(x, y);
     return spawnBubble(position, radius, _initialBubbleVelocity);

@@ -41,8 +41,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
     _loadStations(18);
     _loadPops();
 
-    // TODO renable audio before releasing this
-    // _startAudio();
+    _startShowerAudio();
   }
 
   @override
