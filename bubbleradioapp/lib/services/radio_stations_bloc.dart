@@ -1,9 +1,9 @@
-import 'package:bubbleradioapp/services/radio_stations_api.dart';
-import 'package:bubbleradioapp/services/service_locator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/radio_station.dart';
+import 'radio_stations_api.dart';
+import 'service_locator.dart';
 
 /// Bloc'ifies access to RadioStationsApi
 class RadioStationsBloc extends Cubit<List<RadioStation>> {

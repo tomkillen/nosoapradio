@@ -1,8 +1,9 @@
 import 'dart:ui';
 
-import 'package:bubbleradioapp/physics/bubble_simulation.dart';
 import 'package:flutter/material.dart';
 import 'package:forge2d/forge2d.dart';
+
+import 'bubble_simulation.dart';
 
 class PhysicsRenderer {
   double get ppm => BubbleSimulation.ppm;

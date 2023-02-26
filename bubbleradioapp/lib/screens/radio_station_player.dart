@@ -1,10 +1,10 @@
-import 'package:bubbleradioapp/widgets/soapy_button.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../models/radio_station.dart';
 import '../widgets/header_text.dart';
 import '../widgets/pulsing_widget.dart';
+import '../widgets/soapy_button.dart';
 
 class RadioPlayer extends StatefulWidget {
   final RadioStation station;

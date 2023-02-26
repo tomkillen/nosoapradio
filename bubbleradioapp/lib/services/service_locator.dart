@@ -1,6 +1,7 @@
-import 'package:bubbleradioapp/physics/bubble_simulation.dart';
-import 'package:bubbleradioapp/services/radio_stations_api.dart';
 import 'package:get_it/get_it.dart';
+
+import '../physics/bubble_simulation.dart';
+import 'radio_stations_api.dart';
 
 class ServiceLocator {
   static init() {
