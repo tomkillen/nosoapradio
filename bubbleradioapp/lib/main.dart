@@ -3,7 +3,8 @@ import 'package:bubbleradioapp/services/radio_stations_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widgets/radio_station_list.dart';
+import 'screens/bubble_radio.dart';
+//import 'widgets/radio_station_list.dart';
 import 'screens/radio_station_player.dart';
 
 void main() {
@@ -23,12 +24,12 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const Scaffold(body: RadioStationList()),
+          // home: const Scaffold(body: RadioStationList()),
+          home: const BubbleRadio(),
           routes: {
-            '/radio': (context) => Scaffold(
-                body: RadioPlayer(
-                    station: ModalRoute.of(context)!.settings.arguments
-                        as RadioStation)),
+            '/radio': (context) => RadioPlayer(
+                station:
+                    ModalRoute.of(context)!.settings.arguments as RadioStation),
           }),
     );
   }
