@@ -14,11 +14,13 @@ class Bubble {
   StreamController<Vector2> positionStream = StreamController();
 
   Vector2 get position {
-    if (body != null) {
-      return Vector2(body!.position.x * BubbleSimulation.ppm, body!.position.y * BubbleSimulation.ppm);
-    } else {
-      return Vector2(0, 0);
-    }
+    return (body != null)
+        ? Vector2(body!.position.x * BubbleSimulation.ppm, body!.position.y * BubbleSimulation.ppm)
+        : Vector2.zero();
+  }
+
+  double get angle {
+    return (body != null) ? body!.angle : 0;
   }
 
   Bubble({required this.color, required this.radius});

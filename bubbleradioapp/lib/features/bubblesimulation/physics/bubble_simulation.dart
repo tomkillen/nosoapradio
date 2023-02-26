@@ -29,7 +29,7 @@ class BubbleSimulation {
   final World world = World();
   NeedsRepaintCallback? onNeedPaint;
 
-  final int maxNumBubbles;
+  int _maxNumBubbles = 32;
   final _random = Random();
   Size _size = Size.zero;
   Vector3 _realGravityNormalized = Vector3(0, 1, 0); // portrait-up
@@ -48,12 +48,13 @@ class BubbleSimulation {
     const Color.fromARGB(255, 253, 66, 193),
   ];
 
-  BubbleSimulation({required this.maxNumBubbles});
-
-  void initialize(Size size) {
-    assert(!_initialized);
+  void initialize(Size size, int maxNumBubbles) {
+    if (_initialized) {
+      return;
+    }
 
     _size = size;
+    _maxNumBubbles = maxNumBubbles;
 
     // Setup world
     world.setAllowSleep(false);
@@ -119,7 +120,7 @@ class BubbleSimulation {
   Bubble? spawnBubble(Vector2 position, double radius, Vector2 initialVelocity) {
     assert(_initialized);
 
-    if (bubbles.length >= maxNumBubbles) {
+    if (bubbles.length >= _maxNumBubbles) {
       return null;
     }
 

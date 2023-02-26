@@ -1,20 +1,21 @@
 import 'package:bubbleradioapp/models/radio_station.dart';
-import 'package:bubbleradioapp/services/radio_stations_service.dart';
+import 'package:bubbleradioapp/services/radio_stations_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'screens/bubble_radio.dart';
-//import 'widgets/radio_station_list.dart';
 import 'screens/radio_station_player.dart';
+import 'services/service_locator.dart';
 
 void main() {
+  ServiceLocator.init();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -24,7 +25,6 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          // home: const Scaffold(body: RadioStationList()),
           home: BubbleRadio(),
           routes: {
             '/radio': (context) => RadioPlayer(station: ModalRoute.of(context)!.settings.arguments as RadioStation),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/radio_station.dart';
-import '../services/radio_stations_service.dart';
+import '../services/radio_stations_bloc.dart';
 
 class RadioStationList extends StatelessWidget {
   const RadioStationList({super.key});
@@ -24,7 +24,7 @@ class RadioStationList extends StatelessWidget {
         );
       },
       buildWhen: (previous, current) => current.isNotEmpty,
-      bloc: BlocProvider.of<RadioStationsBloc>(context)..getRadioStations(),
+      bloc: BlocProvider.of<RadioStationsBloc>(context)..fetchRadioStations(20),
     );
   }
 }
