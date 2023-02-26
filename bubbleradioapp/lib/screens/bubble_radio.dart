@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -27,19 +29,17 @@ class BubbleRadio extends StatefulWidget {
 class _BubbleRadioState extends State<BubbleRadio> {
   static const double minBubbleSize = 32;
   static const double maxBubbleSize = 64;
+  final _random = Random();
   final _backgroundAudio = AudioPlayer();
   final _sfxBigPop = AudioPlayer();
-  final _sfxMidPop = AudioPlayer();
-  final _sfxSmallPop = AudioPlayer();
   final List<RadioStationBubble> _radioBubbleWidgets = [];
 
   @override
   void initState() {
     super.initState();
-    _loadStations();
-    _sfxBigPop.setAsset('assets/sounds/big_pop.wav');
-    _sfxMidPop.setAsset('assets/sounds/middle_pop.wav');
-    _sfxSmallPop.setAsset('assets/sounds/small_pop.wav');
+
+    _loadStations(18);
+    _loadPops();
 
     // TODO renable audio before releasing this
     // _startAudio();
@@ -70,28 +70,14 @@ class _BubbleRadioState extends State<BubbleRadio> {
   void _onBubblePopped(Bubble bubble) {
     // Despawn the bubble or reuse it as another radio station
     ServiceLocator.get<BubbleSimulation>().respawnBubble(bubble, minBubbleSize, maxBubbleSize);
+    _removeDeadRadioBubble(deadBubble: bubble);
 
-    // Give some feedback, with the strength of the pop audio sfx corresponding
-    // to the bubble size
-    if (bubble.radius < 42) {
-      _playSmallBubblePop();
-    } else if (bubble.radius < 52) {
-      _playMidBubblePop();
-    } else {
-      _playBigBubblePop();
-    }
+    // Give some feedback
+    _playBigBubblePop();
   }
 
-  Future<void> _playSmallBubblePop() async {
-    await _sfxBigPop.stop();
-    await _sfxBigPop.seek(Duration.zero);
-    _sfxBigPop.play();
-  }
-
-  Future<void> _playMidBubblePop() async {
-    await _sfxBigPop.stop();
-    await _sfxBigPop.seek(Duration.zero);
-    _sfxBigPop.play();
+  Future<void> _loadPops() async {
+    await _sfxBigPop.setAsset('assets/sounds/big_pop.wav');
   }
 
   Future<void> _playBigBubblePop() async {
@@ -106,8 +92,18 @@ class _BubbleRadioState extends State<BubbleRadio> {
     _backgroundAudio.play();
   }
 
-  Future<void> _loadStations() async {
-    final stations = await ServiceLocator.get<RadioStationsApi>().getRadioStations(limit: 32);
+  Future<void> _removeDeadRadioBubble({required Bubble deadBubble, double delaySeconds = -1.0}) async {
+    // Wait for the bubble to complete it's pop and remove it
+    if (delaySeconds < 0) {
+      delaySeconds = _random.nextDouble() * 2.0 + 2.0;
+    }
+    Timer(Duration(microseconds: (delaySeconds * 1000.0 * 1000.0).toInt()), () {
+      _loadStations(1);
+    });
+  }
+
+  Future<void> _loadStations(int numToLoad) async {
+    final stations = await ServiceLocator.get<RadioStationsApi>().getRadioStations(limit: numToLoad);
     if (stations.isEmpty) {
       // no stations loaded
       return;
@@ -123,9 +119,9 @@ class _BubbleRadioState extends State<BubbleRadio> {
 
     setState(() {
       for (var station in stations) {
-        // final votePower = (station.votes - minVotes) / voteVariance;
-        var bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(minBubbleSize, maxBubbleSize);
-        if (bubble != null) {
+        if (station.favicon != '' && station.url != '') {
+          // final votePower = (station.votes - minVotes) / voteVariance;
+          var bubble = ServiceLocator.get<BubbleSimulation>().spawnRandomBubble(minBubbleSize, maxBubbleSize);
           bubble.station = station;
           _radioBubbleWidgets.add(_createRadioBubbleWidget(bubble));
         }

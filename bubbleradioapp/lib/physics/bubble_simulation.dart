@@ -29,7 +29,6 @@ class BubbleSimulation {
   final World world = World();
   NeedsRepaintCallback? onNeedPaint;
 
-  int _maxNumBubbles = 32;
   final _random = Random();
   Size _size = Size.zero;
   Vector3 _realGravityNormalized = Vector3(0, 1, 0); // portrait-up
@@ -54,7 +53,6 @@ class BubbleSimulation {
     }
 
     _size = size;
-    _maxNumBubbles = maxNumBubbles;
 
     // Setup world
     world.setAllowSleep(false);
@@ -117,12 +115,8 @@ class BubbleSimulation {
     });
   }
 
-  Bubble? spawnBubble(Vector2 position, double radius, Vector2 initialVelocity) {
+  Bubble spawnBubble(Vector2 position, double radius, Vector2 initialVelocity) {
     assert(_initialized);
-
-    if (bubbles.length >= _maxNumBubbles) {
-      return null;
-    }
 
     final color = _colors[_random.nextInt(_colors.length)];
     final bubble = Bubble(color: color, radius: radius);
@@ -150,13 +144,13 @@ class BubbleSimulation {
   }
 
   /// Helper method that will spawn a bubble of a random size
-  Bubble? spawnRandomBubble(double minSize, double maxSize) {
+  Bubble spawnRandomBubble(double minSize, double maxSize) {
     return spawnBubbleWithRadius(_random.nextDouble() * (maxSize - minSize) + minSize);
   }
 
   /// Helper method for spawning bubbles without needing to be aware of the
   /// configuration of the simulation
-  Bubble? spawnBubbleWithRadius(double radius) {
+  Bubble spawnBubbleWithRadius(double radius) {
     double x = _random.nextDouble() * (_size.width / 2) + _size.width / 2;
     double y = _random.nextDouble() * 50.0 + _size.height - 100.0;
     Vector2 position = Vector2(x, y);

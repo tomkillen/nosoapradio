@@ -21,6 +21,6 @@ class RadioStationsApi {
 
   Uri _createRadioStationQuery({int limit = 20}) {
     return Uri.parse(
-        'https://de1.api.radio-browser.info/json/stations/search?limit=$limit&hidebroken=true&has_extended_info=true&order=votes&reverse=true');
+        'https://de1.api.radio-browser.info/json/stations/search?limit=$limit&hidebroken=true&has_extended_info=true&order=random');
   }
 }

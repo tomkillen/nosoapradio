@@ -20,6 +20,7 @@ class _RadioPlayerState extends State<RadioPlayer> {
     super.initState();
     _player.setUrl(widget.station.url).catchError((error) {
       print('Failed to load audio: $error');
+      return null;
     });
   }
 
@@ -60,8 +61,7 @@ class _RadioPlayerState extends State<RadioPlayer> {
                         }
                         setState(() {});
                       },
-                      icon:
-                          Icon(_player.playing ? Icons.stop : Icons.play_arrow),
+                      icon: Icon(_player.playing ? Icons.stop : Icons.play_arrow),
                       iconSize: 64.0,
                     ),
                     const SizedBox(height: 16.0),
