@@ -102,7 +102,7 @@ class BubbleSimulation {
       double x = _random.nextDouble() * (_size.width - radius * 2.0);
       double y = _random.nextDouble() * 100.0 + _size.height - 200.0;
 
-      _spawnBubble(Vector2(x, y), radius);
+      spawnBubble(Vector2(x, y), radius, _initialBubbleVelocity);
 
       numBubblesToSpawn -= 1;
 
@@ -111,6 +111,41 @@ class BubbleSimulation {
         timer.cancel();
       }
     });
+  }
+
+  Bubble spawnBubble(Vector2 position, double radius, Vector2 initialVelocity) {
+    assert(_initialized);
+
+    final color = _colors[_random.nextInt(_colors.length)];
+    final bubble = Bubble(color: color, radius: radius);
+    final shape = CircleShape()..radius = radius / ppm;
+
+    final fixture = FixtureDef(shape)
+      ..density = 1
+      ..friction = 0.3
+      ..restitution = 0.5;
+
+    final bodyDef = BodyDef()
+      ..position = position / ppm
+      ..type = BodyType.dynamic
+      ..bullet = false
+      ..userData = bubble
+      ..gravityScale = Vector2(-1, -1) * (_random.nextDouble() * 0.25 + 0.75);
+    bubble.body = world.createBody(bodyDef)
+      ..createFixture(fixture)
+      ..linearVelocity = initialVelocity
+      ..linearDamping = 0.01
+      ..angularDamping = 0.01;
+
+    bubbles.add(bubble);
+    return bubble;
+  }
+
+  void despawnBubble(Bubble bubble) {
+    if (bubble.body != null) {
+      world.destroyBody(bubble.body!);
+    }
+    bubbles.remove(bubble);
   }
 
   void _frameCallback(Duration frameDelta) {
@@ -135,33 +170,6 @@ class BubbleSimulation {
   void _step(double stepDeltaSeconds) {
     assert(_initialized);
     world.stepDt(stepDeltaSeconds);
-  }
-
-  void _spawnBubble(Vector2 position, double radius) {
-    assert(_initialized);
-
-    final color = _colors[_random.nextInt(_colors.length)];
-    final bubble = Bubble(color: color, radius: radius);
-    final shape = CircleShape()..radius = radius / ppm;
-
-    final fixture = FixtureDef(shape)
-      ..density = 1
-      ..friction = 0.3
-      ..restitution = 0.5;
-
-    final bodyDef = BodyDef()
-      ..position = position / ppm
-      ..type = BodyType.dynamic
-      ..bullet = false
-      ..userData = bubble
-      ..gravityScale = Vector2(-1, -1) * (_random.nextDouble() * 0.25 + 0.75);
-    bubble.body = world.createBody(bodyDef)
-      ..createFixture(fixture)
-      ..linearVelocity = _initialBubbleVelocity
-      ..linearDamping = 0.01
-      ..angularDamping = 0.01;
-
-    bubbles.add(bubble);
   }
 
   void _createWalls() {
