@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,14 +9,15 @@ class RadioStationsService extends Cubit<List<RadioStation>> {
   RadioStationsService() : super([]);
 
   Future<void> getRadioStations() async {
-    print('Loading radio stations');
     try {
       final response = await http.get(_createRadioStationQuery(limit: 20));
       final json = jsonDecode(response.body) as List<dynamic>;
       final stations = json.map((e) => RadioStation.fromJson(e)).toList();
       emit(stations);
     } catch (e) {
-      print('Failed to load radio stations: $e');
+      if (kDebugMode) {
+        print('Failed to load radio stations: $e');
+      }
     }
   }
 

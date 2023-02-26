@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../features/bubblesimulation/widgets/bubble_simulation_painter.dart';
 
-class BubbleRadio extends StatefulWidget {
+class BubbleRadio extends StatelessWidget {
   const BubbleRadio({super.key});
-
-  @override
-  State<BubbleRadio> createState() => _BubbleRadioState();
-}
-
-class _BubbleRadioState extends State<BubbleRadio> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
