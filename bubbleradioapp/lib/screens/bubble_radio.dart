@@ -1,6 +1,6 @@
+import 'package:forge2d/forge2d.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/wave_animation.dart';
+import 'dart:math';
 
 class BubbleRadio extends StatefulWidget {
   const BubbleRadio({super.key});
@@ -17,7 +17,13 @@ class _BubbleRadioState extends State<BubbleRadio> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-        body: BackgroundWave(height: 30, waveLength: 1200, speed: 0.1));
+    return Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/images/white_large.jpg'),
+              repeat: ImageRepeat.repeat),
+        ),
+        child: const Text('Hello world') // Your widget contents here
+        );
   }
 }
