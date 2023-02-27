@@ -103,13 +103,13 @@ class _RadioPlayerState extends State<RadioPlayer> with WidgetsBindingObserver {
                                         color: Color.fromARGB(255, 113, 191, 69))),
 
                                 // Radio tags text display
-                                HeaderText(widget.station.tags,
+                                HeaderText(widget.station.tags.join(', '),
                                     delay: const Duration(milliseconds: 1500),
                                     duration: const Duration(milliseconds: 300),
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
-                                        fontFamily: 'ClimateCrisis',
-                                        fontSize: 18,
+                                        fontFamily: 'ShantellSans',
+                                        fontSize: 36,
                                         color: Color.fromARGB(255, 63, 200, 244))),
                               ])))),
 

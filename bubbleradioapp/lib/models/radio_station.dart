@@ -10,7 +10,7 @@ class RadioStation {
   final String favicon;
 
   /// A set of tags associated with this radio station
-  final String tags;
+  final List<String> tags;
 
   /// The vote count of this radio station, indicating it's popularity, with a
   /// higher vote count being more popular
@@ -59,7 +59,10 @@ class RadioStation {
     // "geo_long": -73.97538,
     // "has_extended_info": true
 
+    String tagsStr = json['tags'] as String;
+    List<String> tags = tagsStr.split(',');
+
     return RadioStation(
-        name: json['name'], url: json['url'], favicon: json['favicon'], tags: json['tags'], votes: json['votes']);
+        name: json['name'], url: json['url'], favicon: json['favicon'], tags: tags, votes: json['votes']);
   }
 }

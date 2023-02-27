@@ -36,3 +36,6 @@ flutter:
     - family: ClimateCrisis
       fonts:
         - asset: fonts/Climate_Crisis/ClimateCrisis-Regular-VariableFont_YEAR.ttf
+    - family: ShantellSans
+      fonts:
+        - asset: fonts/Shantell_Sans/ShantellSans-VariableFont_BNCE,INFM,SPAC,wght.ttf
