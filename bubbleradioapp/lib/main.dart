@@ -8,6 +8,7 @@ import 'services/radio_stations_bloc.dart';
 import 'services/service_locator.dart';
 
 void main() {
+  // Initialize Service locator, a simple provider of business logic services
   ServiceLocator.init();
 
   runApp(const MyApp());
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => RadioStationsBloc(),
       child: MaterialApp(
-          title: 'Bubble Radio',
+          title: 'No Soap Radio',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),

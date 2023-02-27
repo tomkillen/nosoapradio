@@ -1,12 +1,25 @@
+/// A RadioStation is a data model of an internet radio station
 class RadioStation {
+  /// The name of this radio station, e.g. "107.4 Radio FM"
   final String name;
+
+  /// The url of the audio stream for this radio station
   final String url;
+
+  /// The url of a favicon / cover art associated with this radio station
   final String favicon;
+
+  /// A set of tags associated with this radio station
   final String tags;
+
+  /// The vote count of this radio station, indicating it's popularity, with a
+  /// higher vote count being more popular
   final int votes;
 
+  /// Creates a new radio station instance with the appropriate meta data
   RadioStation({required this.name, required this.url, required this.favicon, required this.tags, required this.votes});
 
+  /// Constructs a radio station from a JSON blob, as defined by http://radio-browser.info/
   factory RadioStation.fromJson(Map<String, dynamic> json) {
     // Example JSON object
     // "changeuuid": "de1da046-eaae-4ee8-abdf-8187e89dcf33",

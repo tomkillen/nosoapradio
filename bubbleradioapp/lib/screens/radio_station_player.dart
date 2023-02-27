@@ -6,6 +6,8 @@ import '../widgets/header_text.dart';
 import '../widgets/pulsing_widget.dart';
 import '../widgets/soapy_button.dart';
 
+/// A radio player is a screen that presents a play / pause button to the user
+/// and plays the selected radio station
 class RadioPlayer extends StatefulWidget {
   final RadioStation station;
 
@@ -41,11 +43,9 @@ class _RadioPlayerState extends State<RadioPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_stage == _RadioPlayerStage.failed) {
-      Navigator.pop(context);
-    }
-
     return Scaffold(
+
+        // Wrap the screen in a swipe detector that allows the user to swip back to the previous screen
         body: GestureDetector(
             onHorizontalDragEnd: (details) {
               // Swipe back to the previous page
@@ -57,19 +57,22 @@ class _RadioPlayerState extends State<RadioPlayer> {
                 Navigator.of(context).pop();
               }
             },
+
+            // Main contents
             child: Container(
                 decoration: const BoxDecoration(
                   image:
                       DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
                 ),
                 child: Stack(children: [
+                  // Some UI descriping the current radio station
                   SafeArea(
                       child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Align(
                               alignment: Alignment.topRight,
                               child: Column(children: [
-                                // Radio Name
+                                // Radio Name text display
                                 HeaderText(widget.station.name,
                                     delay: const Duration(milliseconds: 1200),
                                     duration: const Duration(milliseconds: 180),
@@ -79,7 +82,7 @@ class _RadioPlayerState extends State<RadioPlayer> {
                                         fontSize: 24,
                                         color: Color.fromARGB(255, 113, 191, 69))),
 
-                                // Radio tags
+                                // Radio tags text display
                                 HeaderText(widget.station.tags,
                                     delay: const Duration(milliseconds: 1500),
                                     duration: const Duration(milliseconds: 300),
@@ -89,31 +92,39 @@ class _RadioPlayerState extends State<RadioPlayer> {
                                         fontSize: 18,
                                         color: Color.fromARGB(255, 63, 200, 244))),
                               ])))),
+
+                  // Radio playback controls, which pulse to the beat of the music
                   PulsingWidget(
                     // Ideally we could beat detect the music to drive the duration of the pulse
                     // Use a fourier transform for this
                     pulseDuration: const Duration(milliseconds: 500),
-                    pulsing: _player.playing,
+                    pulsing: _stage == _RadioPlayerStage.playing,
                     child: Center(
                         child: SoapyButton(
                             isPlaying: _player.playing,
                             isLoading: _stage == _RadioPlayerStage.loading,
                             onPressed: () {
+                              // User pressed the big play / pause button.
+                              // If the stream is playing, then pause it
+                              // If it is paused, then play it
                               if (_player.playing) {
                                 setState(() {
                                   _stage = _RadioPlayerStage.stopped;
                                 });
                                 _player.stop();
-                                Navigator.pop(context);
                               } else {
                                 _player.play();
-                                setState(() {});
+                                setState(() {
+                                  _stage = _RadioPlayerStage.playing;
+                                });
                               }
                             })),
                   )
                 ]))));
   }
 
+  /// Helper method for playing the stream, first it loads the stream, then it
+  /// plays the stream
   Future<void> _play() async {
     await _player.setUrl(widget.station.url).catchError((error) {
       setState(() {

@@ -1,5 +1,6 @@
 import 'dart:async' as async;
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:forge2d/forge2d.dart';
 import 'package:flutter/material.dart';
@@ -7,26 +8,35 @@ import 'package:sensors/sensors.dart';
 
 import '../models/bubble.dart';
 
+/// Callback type for when the BubbleSimulation requires repainting
 typedef NeedsRepaintCallback = Function();
 
+/// A BubbleSimulation is a forge2d physics simulation that creates bubbles
+/// that float in the space and collide with each other
 class BubbleSimulation {
-  // pixels per meter / pixels per unit of the sim
-  // this scales the simulation down to a sane size since Box2D will suffer
-  // from floating-point inaccuracy issues when the size of the sim is larger
-  // than O(100).
-  // To really future proof this, we should calculate this scalar based on the
-  // screen size but I won't gold plate it now since most phones are O(1000)
-  // pixels and so diving by 100 brings us into the realm of nice values
+  /// pixels per meter / pixels per unit of the sim
+  /// this scales the simulation down to a sane size since Box2D will suffer
+  /// from floating-point inaccuracy issues when the size of the sim is larger
+  /// than O(100).
+  /// To really future proof this, we should calculate this scalar based on the
+  /// screen size but I won't gold plate it now since most phones are O(1000)
+  /// pixels and so diving by 100 brings us into the realm of nice values
   static const double ppm = 100;
 
-  // We prefer the integrity of the physics simulation even at the expense of
-  // skipped frames so limit the update tick to no more than 60 fps
+  /// We prefer the integrity of the physics simulation even at the expense of
+  /// skipped frames so limit the update tick to no more than 60 fps
   static const double maxDeltaTimeSeconds = 1.0 / 30.0;
 
+  /// Default gravity to that on earth
   static const double defaultGravity = 9.8;
 
-  final List<Bubble> bubbles = [];
+  /// A list of bubbles referenced by this simulation
+  final List<Bubble> _bubbles = [];
+
+  /// Physics world used by this simulation
   final World world = World();
+
+  /// Callback event triggered when this simulation has updated it's state
   NeedsRepaintCallback? onNeedPaint;
 
   final _random = Random();
@@ -47,7 +57,8 @@ class BubbleSimulation {
     const Color.fromARGB(255, 253, 66, 193),
   ];
 
-  void initialize(Size size, int maxNumBubbles) {
+  /// Initializes this simulation to map to the provided size in pixels
+  void initialize(Size size) {
     if (_initialized) {
       return;
     }
@@ -65,6 +76,7 @@ class BubbleSimulation {
     start();
   }
 
+  /// Starts or resumes this physics simulation
   void start() {
     if (_initialized && !_running) {
       _running = true;
@@ -77,6 +89,7 @@ class BubbleSimulation {
     }
   }
 
+  /// Pauses this physics simulation
   void stop() {
     if (_running) {
       // cancel frame ticker
@@ -93,6 +106,7 @@ class BubbleSimulation {
     }
   }
 
+  /// Spawns numBubblesToSpawn with randomized locations and sizes
   void spawnBubbles(int numBubblesToSpawn) {
     if (!_initialized) {
       throw Exception('Bubble simulation not yet initialized');
@@ -115,6 +129,7 @@ class BubbleSimulation {
     });
   }
 
+  /// Spawns a bubble at the specified and with the specified size and velocity
   Bubble spawnBubble(Vector2 position, double radius, Vector2 initialVelocity) {
     assert(_initialized);
 
@@ -139,7 +154,7 @@ class BubbleSimulation {
       ..linearDamping = 0.01
       ..angularDamping = 0.01;
 
-    bubbles.add(bubble);
+    _bubbles.add(bubble);
     return bubble;
   }
 
@@ -157,9 +172,12 @@ class BubbleSimulation {
     return spawnBubble(position, radius, _initialBubbleVelocity);
   }
 
+  /// Reuses an existing bubble, respawning it at a new location
   void respawnBubble(Bubble bubble, double minSize, double maxSize) {
     if (bubble.body == null) {
-      print('Bubble is not in the physics system');
+      if (kDebugMode) {
+        print('Bubble is not in the physics system');
+      }
       return;
     } else {
       // final radius = _random.nextDouble() * (maxSize - minSize) + minSize;
@@ -170,13 +188,15 @@ class BubbleSimulation {
     }
   }
 
+  /// Removes a bubble from this simulation
   void despawnBubble(Bubble bubble) {
     if (bubble.body != null) {
       world.destroyBody(bubble.body!);
     }
-    bubbles.remove(bubble);
+    _bubbles.remove(bubble);
   }
 
+  /// Scheduled to be called once per frame, ideally 60 times per second
   void _frameCallback(Duration frameDelta) {
     // Calculate frame delta seconds based by converting the duration
     // milliseconds for highest available accuracy
@@ -188,7 +208,7 @@ class BubbleSimulation {
     _step(deltaTimeSeconds);
 
     // Publish positions
-    _publishStreams();
+    _updateBubbles();
 
     // Mark we need a repaint
     onNeedPaint?.call();
@@ -199,18 +219,22 @@ class BubbleSimulation {
     }
   }
 
+  /// Updates the physics world
   void _step(double stepDeltaSeconds) {
     assert(_initialized);
     world.stepDt(stepDeltaSeconds);
   }
 
-  void _publishStreams() {
+  /// Update the bubbles in this system
+  void _updateBubbles() {
     assert(_initialized);
-    for (var bubble in bubbles) {
-      bubble.updateStreams();
+    for (var bubble in _bubbles) {
+      bubble.update();
     }
   }
 
+  /// Create the boundaries of a box around the indicated size to prevent the
+  /// bubbles from floating off screen
   void _createWalls() {
     const wallThickness = 10.0 / ppm;
     // Left wall
@@ -226,6 +250,7 @@ class BubbleSimulation {
     _createWall(Vector2(_size.width / 2, _size.height) / ppm, Size(_size.width, wallThickness) / ppm, Colors.green);
   }
 
+  /// Helper method to create a wall
   Body _createWall(Vector2 position, Size size, Color color) {
     final bodyDef = BodyDef()
       ..type = BodyType.static
@@ -238,6 +263,7 @@ class BubbleSimulation {
     return body;
   }
 
+  /// Callback for receiving accelerometer data from the sensors package
   void _accelerometerEventHandler(AccelerometerEvent event) {
     _realGravityNormalized = Vector3(-event.x, event.y, event.z).normalized();
     _caculateWorldGravity();

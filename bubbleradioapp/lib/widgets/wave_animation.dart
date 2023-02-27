@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+/// Experimental animated painted animation, was toying with an idea of having
+/// the bubbles rise from water.
+/// This component is not in a complete state.
 class BackgroundWave extends StatefulWidget {
   final double height;
   final double speed;
@@ -18,17 +21,14 @@ class BackgroundWave extends StatefulWidget {
   State<BackgroundWave> createState() => _BackgroundWaveState();
 }
 
-class _BackgroundWaveState extends State<BackgroundWave>
-    with SingleTickerProviderStateMixin {
+class _BackgroundWaveState extends State<BackgroundWave> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2))
-          ..repeat();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
     _animation = Tween<double>(begin: 0, end: 2 * pi).animate(_controller);
   }
 
@@ -83,6 +83,5 @@ class _WavePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_WavePainter oldDelegate) =>
-      animationValue != oldDelegate.animationValue;
+  bool shouldRepaint(_WavePainter oldDelegate) => animationValue != oldDelegate.animationValue;
 }

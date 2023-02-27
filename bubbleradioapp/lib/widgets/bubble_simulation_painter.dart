@@ -4,6 +4,8 @@ import '../../../models/bubble.dart';
 import '../../../physics/bubble_simulation.dart';
 import '../../../physics/physics_renderer.dart';
 
+/// Utility class for rendering the bubble simulation directly to the screen
+/// using a CustomPainter
 class BubbleSimulationPainterWidget extends LeafRenderObjectWidget {
   final BubbleSimulation bubbleSimulation;
 

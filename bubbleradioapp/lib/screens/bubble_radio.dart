@@ -11,6 +11,10 @@ import '../services/radio_stations_api.dart';
 import '../services/service_locator.dart';
 import '../widgets/radio_station_bubble.dart';
 
+/// A Screen that displays a set of bubbles on screen, those bubbles are
+/// animated using a physics animation system. Each bubble can be popped by
+/// tapping it, and double tapping a bubble will open the radio station player
+/// for the radio associated with that bubble
 class BubbleRadio extends StatefulWidget {
   BubbleRadio({super.key}) {
     _initSimulation();
@@ -22,7 +26,7 @@ class BubbleRadio extends StatefulWidget {
   void _initSimulation() {
     // Create a bubble simulation sized to fit the physical screen
     final Size simSize = window.physicalSize / window.devicePixelRatio;
-    ServiceLocator.get<BubbleSimulation>().initialize(simSize, 18);
+    ServiceLocator.get<BubbleSimulation>().initialize(simSize);
   }
 }
 

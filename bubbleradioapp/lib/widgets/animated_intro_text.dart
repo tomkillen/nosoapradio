@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// A widget that animates text in from the top and the left
 class AnimatedTextLines extends StatefulWidget {
+  /// Top line of this display
   final String topText;
+
+  /// Bottom line of this display
   final String leftText;
 
   const AnimatedTextLines({
@@ -42,6 +46,7 @@ class _AnimatedTextLinesState extends State<AnimatedTextLines> with SingleTicker
       ),
     );
 
+    // Start this animation immediately since we are for the intro screen
     _controller.forward();
   }
 
@@ -54,6 +59,7 @@ class _AnimatedTextLinesState extends State<AnimatedTextLines> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      // Top Text
       AnimatedBuilder(
         animation: _controller,
         builder: (context, child) => Transform.translate(
@@ -65,7 +71,11 @@ class _AnimatedTextLinesState extends State<AnimatedTextLines> with SingleTicker
           style: const TextStyle(fontFamily: 'ClimateCrisis', fontSize: 48, color: Color.fromARGB(255, 63, 200, 244)),
         ),
       ),
+
+      // Gap
       const SizedBox(height: 32),
+
+      // Bottom Text
       AnimatedBuilder(
         animation: _controller,
         builder: (context, child) => Transform.translate(

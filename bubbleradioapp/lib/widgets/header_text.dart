@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Text widget for displaying big feature text with a fancy font that animates
+/// in from the right hand edge.
 class HeaderText extends StatefulWidget {
   final String text;
   final Duration duration;
