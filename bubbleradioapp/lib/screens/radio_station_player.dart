@@ -130,10 +130,7 @@ class _RadioPlayerState extends State<RadioPlayer> with WidgetsBindingObserver {
                               if (_player.playing) {
                                 _stop();
                               } else {
-                                _player.play();
-                                setState(() {
-                                  _stage = _RadioPlayerStage.playing;
-                                });
+                                _play();
                               }
                             })),
                   )
@@ -143,6 +140,9 @@ class _RadioPlayerState extends State<RadioPlayer> with WidgetsBindingObserver {
   /// Helper method for playing the stream, first it loads the stream, then it
   /// plays the stream
   Future<void> _play() async {
+    setState(() {
+      _stage = _RadioPlayerStage.loading;
+    });
     await _player.setUrl(widget.station.url).catchError((error) {
       setState(() {
         _stage = _RadioPlayerStage.failed;
