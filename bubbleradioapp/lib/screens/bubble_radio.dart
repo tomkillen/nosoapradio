@@ -57,12 +57,15 @@ class _BubbleRadioState extends State<BubbleRadio> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.inactive:
         _stopShowerAudio();
+        _onDragCancel();
         break;
       case AppLifecycleState.paused:
         _stopShowerAudio();
+        _onDragCancel();
         break;
       case AppLifecycleState.detached:
         _stopShowerAudio();
+        _onDragCancel();
         break;
     }
   }
@@ -79,11 +82,16 @@ class _BubbleRadioState extends State<BubbleRadio> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
-        ),
-        child: Stack(children: _radioBubbleWidgets));
+    return GestureDetector(
+        onPanStart: _onDragStart,
+        onPanUpdate: _onDragUpdate,
+        onPanEnd: _onDragEnd,
+        onPanCancel: _onDragCancel,
+        child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(image: AssetImage('assets/images/white_large.jpg'), repeat: ImageRepeat.repeat),
+            ),
+            child: Stack(children: _radioBubbleWidgets)));
   }
 
   RadioStationBubble _createRadioBubbleWidget(Bubble bubble) {
@@ -162,5 +170,24 @@ class _BubbleRadioState extends State<BubbleRadio> with WidgetsBindingObserver {
         }
       }
     });
+  }
+
+  // Implement dragging so the user can push bubbles around the screen
+
+  void _onDragStart(DragStartDetails details) {
+    ServiceLocator.get<BubbleSimulation>().setFingerPosition(details.globalPosition.dx, details.globalPosition.dy);
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    ServiceLocator.get<BubbleSimulation>().setFingerPosition(details.globalPosition.dx, details.globalPosition.dy);
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    _onDragCancel();
+  }
+
+  void _onDragCancel() {
+    // Set the finger off-screen
+    ServiceLocator.get<BubbleSimulation>().setFingerPosition(-10000.0, -10000.0);
   }
 }

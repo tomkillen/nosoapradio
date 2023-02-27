@@ -44,8 +44,6 @@ class RadioStationsApi {
   Future<List<RadioStation>> _getMoreRadioStations() async {
     try {
       _apiBaseUrl ??= await _findApiBaseUrl();
-      print('Using base url: $_apiBaseUrl');
-
       final response = await http.get(_createRadioStationQuery(page: _page, limit: 20));
       final json = jsonDecode(response.body) as List<dynamic>;
       final stations = json.map((e) => RadioStation.fromJson(e)).toList();

@@ -39,6 +39,9 @@ class BubbleSimulation {
   /// Callback event triggered when this simulation has updated it's state
   NeedsRepaintCallback? onNeedPaint;
 
+  // Finger
+  Body? fingerBody;
+
   final _random = Random();
   Size _size = Size.zero;
   Vector3 _realGravityNormalized = Vector3(0, 1, 0); // portrait-up
@@ -68,6 +71,7 @@ class BubbleSimulation {
     // Setup world
     world.setAllowSleep(false);
     _createWalls();
+    _createFinger();
     _caculateWorldGravity();
 
     _initialized = true;
@@ -196,6 +200,12 @@ class BubbleSimulation {
     _bubbles.remove(bubble);
   }
 
+  /// Sets the position of the draggable finger body to allow interaction
+  /// with the bubbles
+  void setFingerPosition(double x, double y) {
+    fingerBody?.setTransform(Vector2(x / ppm, y / ppm), 0);
+  }
+
   /// Scheduled to be called once per frame, ideally 60 times per second
   void _frameCallback(Duration frameDelta) {
     // Calculate frame delta seconds based by converting the duration
@@ -261,6 +271,18 @@ class BubbleSimulation {
     final fixture = FixtureDef(shape);
     body.createFixture(fixture);
     return body;
+  }
+
+  /// Creates a sphere that represents a users finger to push bubbles around
+  void _createFinger() {
+    const fingerRadius = 32.0 / ppm;
+    final bodyDef = BodyDef()
+      ..type = BodyType.static
+      ..position = Vector2(-10000, -10000);
+    fingerBody = world.createBody(bodyDef);
+    final shape = CircleShape()..radius = fingerRadius;
+    final fixture = FixtureDef(shape);
+    fingerBody!.createFixture(fixture);
   }
 
   /// Callback for receiving accelerometer data from the sensors package
