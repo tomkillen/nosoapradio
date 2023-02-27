@@ -30,7 +30,7 @@ class BubbleRadio extends StatefulWidget {
   }
 }
 
-class _BubbleRadioState extends State<BubbleRadio> {
+class _BubbleRadioState extends State<BubbleRadio> with WidgetsBindingObserver {
   static const double minBubbleSize = 32;
   static const double maxBubbleSize = 64;
   final _random = Random();
@@ -41,6 +41,7 @@ class _BubbleRadioState extends State<BubbleRadio> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     _loadStations(18);
     _loadPops();
@@ -49,12 +50,31 @@ class _BubbleRadioState extends State<BubbleRadio> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _startShowerAudio();
+        break;
+      case AppLifecycleState.inactive:
+        _stopShowerAudio();
+        break;
+      case AppLifecycleState.paused:
+        _stopShowerAudio();
+        break;
+      case AppLifecycleState.detached:
+        _stopShowerAudio();
+        break;
+    }
+  }
+
+  @override
   void dispose() {
-    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     _backgroundAudio.stop();
     _backgroundAudio.dispose();
     _sfxBigPop.stop();
     _sfxBigPop.dispose();
+    super.dispose();
   }
 
   @override
@@ -94,9 +114,17 @@ class _BubbleRadioState extends State<BubbleRadio> {
   }
 
   Future<void> _startShowerAudio() async {
-    await _backgroundAudio.setAsset('assets/sounds/showersinging.wav');
-    _backgroundAudio.setLoopMode(LoopMode.one);
-    _backgroundAudio.play();
+    if (!_backgroundAudio.playing) {
+      await _backgroundAudio.setAsset('assets/sounds/showersinging.wav');
+      _backgroundAudio.setLoopMode(LoopMode.one);
+      _backgroundAudio.play();
+    }
+  }
+
+  Future<void> _stopShowerAudio() async {
+    if (_backgroundAudio.playing) {
+      _backgroundAudio.stop();
+    }
   }
 
   Future<void> _removeDeadRadioBubble({required Bubble deadBubble, double delaySeconds = -1.0}) async {
