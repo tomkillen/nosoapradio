@@ -24,13 +24,14 @@ enum _RadioPlayerStage {
   failed,
 }
 
-class _RadioPlayerState extends State<RadioPlayer> {
+class _RadioPlayerState extends State<RadioPlayer> with WidgetsBindingObserver {
   final _player = AudioPlayer();
   _RadioPlayerStage _stage = _RadioPlayerStage.loading;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _play();
   }
 
@@ -38,7 +39,26 @@ class _RadioPlayerState extends State<RadioPlayer> {
   void dispose() {
     _player.stop();
     _player.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // switch (state) {
+    //   case AppLifecycleState.resumed:
+    //     _play();
+    //     break;
+    //   case AppLifecycleState.inactive:
+    //     _stop();
+    //     break;
+    //   case AppLifecycleState.paused:
+    //     _stop();
+    //     break;
+    //   case AppLifecycleState.detached:
+    //     _stop();
+    //     break;
+    // }
   }
 
   @override
@@ -108,10 +128,7 @@ class _RadioPlayerState extends State<RadioPlayer> {
                               // If the stream is playing, then pause it
                               // If it is paused, then play it
                               if (_player.playing) {
-                                setState(() {
-                                  _stage = _RadioPlayerStage.stopped;
-                                });
-                                _player.stop();
+                                _stop();
                               } else {
                                 _player.play();
                                 setState(() {
@@ -138,6 +155,16 @@ class _RadioPlayerState extends State<RadioPlayer> {
         _stage = _RadioPlayerStage.playing;
       });
       await _player.play();
+    }
+  }
+
+  // Helper method to stop the radio
+  void _stop() {
+    if (_stage == _RadioPlayerStage.playing) {
+      setState(() {
+        _stage = _RadioPlayerStage.stopped;
+      });
+      _player.stop();
     }
   }
 }
