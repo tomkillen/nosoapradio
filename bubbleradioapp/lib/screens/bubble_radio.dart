@@ -53,6 +53,8 @@ class _BubbleRadioState extends State<BubbleRadio> {
     super.dispose();
     _backgroundAudio.stop();
     _backgroundAudio.dispose();
+    _sfxBigPop.stop();
+    _sfxBigPop.dispose();
   }
 
   @override
